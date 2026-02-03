@@ -1,0 +1,43 @@
+﻿@model Webster.Models.ViewModels.CandidateEditVM
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2>Edit Candidate</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="CandidateId" />
+
+    <div class="mb-2">
+        <label>Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label>Phone</label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label>Date Of Birth</label>
+        <input asp-for="DateOfBirth" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Status</label>
+        <select asp-for="Status"
+                asp-items="Html.GetEnumSelectList<Webster.Models.Enums.CandidateStatus>()"
+                class="form-select">
+        </select>
+    </div>
+
+    <button class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

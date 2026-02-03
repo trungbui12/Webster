@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Manager Dashboard";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<div class="container mt-3">
+
+    <h2 class="mb-3">📊 Manager Dashboard</h2>
+
+    <!-- STATISTICS -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body text-center">
+                    <h6>Total Candidates</h6>
+                    <h2>@ViewBag.TotalCandidates</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body text-center">
+                    <h6>Total Test Sections</h6>
+                    <h2>@ViewBag.TotalSections</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-warning shadow">
+                <div class="card-body text-center">
+                    <h6>Total Questions</h6>
+                    <h2>@ViewBag.TotalQuestions</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANAGEMENT BUTTONS -->
+    <h4 class="mb-3">⚙️ Management</h4>
+
+    <div class="row">
+        <div class="col-md-3">
+            <a asp-controller="Candidate" asp-action="Index"
+               class="btn btn-outline-primary w-100 mb-3">
+                👤 Manage Candidates
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-controller="TestSection" asp-action="Index"
+               class="btn btn-outline-success w-100 mb-3">
+                📚 Manage Test Sections
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-controller="Question" asp-action="Index"
+               class="btn btn-outline-warning w-100 mb-3">
+                ❓ Manage Questions
+            </a>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="text-end">
+        <a asp-controller="Account" asp-action="Logout"
+           class="btn btn-danger">
+            🚪 Logout
+        </a>
+    </div>
+
+</div>

@@ -1,0 +1,20 @@
+﻿@model Webster.Models.Entities.TestSection
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2>Delete Test Section</h2>
+
+<p>Are you sure you want to delete this section?</p>
+
+<ul>
+    <li><b>Section:</b> @Model.SectionType</li>
+    <li><b>Duration:</b> @Model.DurationInMinutes minutes</li>
+    <li><b>Total Questions:</b> @Model.TotalQuestions</li>
+</ul>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="TestSectionId" />
+    <button class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

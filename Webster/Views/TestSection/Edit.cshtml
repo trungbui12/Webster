@@ -1,0 +1,30 @@
+﻿@model Webster.Models.ViewModels.TestSectionEditVM
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2>Edit Test Section</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="TestSectionId" />
+
+    <div class="mb-2">
+        <label>Section Type</label>
+        <select asp-for="SectionType"
+                asp-items="Html.GetEnumSelectList<Webster.Models.Enums.TestSectionType>()"
+                class="form-select"></select>
+    </div>
+
+    <div class="mb-2">
+        <label>Duration (minutes)</label>
+        <input asp-for="DurationInMinutes" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Total Questions</label>
+        <input asp-for="TotalQuestions" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

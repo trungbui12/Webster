@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Webster.Models.Entities.Candidate>
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+<h2>Candidate List</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Create Candidate</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th width="200">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.FullName</td>
+                <td>@c.Email</td>
+                <td>@c.Status</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@c.CandidateId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@c.CandidateId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Webster.Models.Entities.TestSection>
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2>Test Sections</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Create Test Section</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Section</th>
+            <th>Duration (min)</th>
+            <th>Total Questions</th>
+            <th width="200">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.SectionType</td>
+                <td>@s.DurationInMinutes</td>
+                <td>@s.TotalQuestions</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@s.TestSectionId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@s.TestSectionId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

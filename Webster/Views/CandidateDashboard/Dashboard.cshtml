@@ -1,0 +1,95 @@
+﻿@model Webster.Models.ViewModels.CandidateDashboardVM
+@using Webster.Models.Enums
+
+@{
+    ViewData["Title"] = "Candidate Dashboard";
+    Layout = "~/Views/Shared/_CandidateLayout.cshtml";
+}
+
+<h2 class="mb-3">Welcome, @Model.FullName</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <p>Status: <strong>@Model.Status</strong></p>
+
+        @if (Model.TotalScore.HasValue)
+        {
+            <p>
+                Total Score: <strong>@Model.TotalScore</strong><br />
+                Result:
+                @if (Model.IsPassed == true)
+                {
+                    <span class="text-success fw-bold">PASSED</span>
+                }
+                else
+                {
+                    <span class="text-danger fw-bold">FAILED</span>
+                }
+            </p>
+        }
+        else
+        {
+            <p class="text-muted">You have not completed all tests yet.</p>
+        }
+    </div>
+</div>
+
+<h4>Test Sections</h4>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Section</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model.TestSections)
+        {
+            <tr>
+                <td>@s.SectionType</td>
+                <td>
+                    @if (s.IsCompleted)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else if (s.IsStarted)
+                    {
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Not Started</span>
+                    }
+                </td>
+                <td>@(s.IsCompleted? s.Score.ToString() : "-")</td>
+                <td>
+                    @if (!s.IsStarted)
+                    {
+                        <a class="btn btn-sm btn-primary"
+                           asp-controller="CandidateTest"
+                           asp-action="Start"
+                           asp-route-testSectionId="@s.TestSectionId">
+                            Start
+                        </a>
+                    }
+                    else if (!s.IsCompleted)
+                    {
+                        <a class="btn btn-sm btn-warning"
+                           asp-controller="CandidateTest"
+                           asp-action="Continue"
+                           asp-route-testSectionId="@s.TestSectionId">
+                            Continue
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Done</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
