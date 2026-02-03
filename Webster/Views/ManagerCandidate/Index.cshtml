@@ -1,0 +1,51 @@
+﻿@model List<Webster.Models.ViewModels.ManagerCandidateListVM>
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<h2 class="mb-4">Candidate List</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Test Progress</th>
+            <th>Total Score</th>
+            <th>Result</th>
+            <th>Completed At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FullName</td>
+                <td>@item.Email</td>
+                <td>
+                    @item.CompletedSections / @item.TotalSections
+                </td>
+                <td>
+                    @(item.TotalScore != null ? item.TotalScore.ToString() : "-")
+                </td>
+                <td>
+                    @if (item.IsPassed == null)
+                    {
+                        <span class="badge bg-secondary">In Progress</span>
+                    }
+                    else if (item.IsPassed == true)
+                    {
+                        <span class="badge bg-success">Passed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Failed</span>
+                    }
+                </td>
+                <td>
+                    @(item.CompletedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,63 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+@model Webster.Models.ViewModels.QuestionCreateVM
+@using Webster.Models.Enums
+
+<h2>Create Question</h2>
+
+<form asp-action="Create" method="post">
+
+    <!-- Question -->
+    <div class="mb-3">
+        <label>Content</label>
+        <textarea asp-for="Content" class="form-control"></textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label>Score</label>
+            <input asp-for="Score" class="form-control" />
+        </div>
+
+        <div class="col-md-4">
+            <label>Difficulty</label>
+            <select asp-for="Difficulty"
+                    asp-items="Html.GetEnumSelectList<QuestionDifficulty>()"
+                    class="form-control"></select>
+        </div>
+
+        <div class="col-md-4">
+            <label>Test Section</label>
+            <select asp-for="TestSectionId"
+                    asp-items="@(new SelectList(ViewBag.TestSections, "TestSectionId", "SectionType"))"
+                    class="form-control"></select>
+        </div>
+    </div>
+
+    <hr />
+    <h4>Answers (Choose ONE correct)</h4>
+
+    @for (int i = 0; i < 4; i++)
+    {
+        <div class="mb-2 border p-2 rounded">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <input type="radio"
+                           asp-for="CorrectAnswerId"
+                           value="@i" />
+                </div>
+
+                <input asp-for="Answers[@i].Content"
+                       class="form-control"
+                       placeholder="Answer @(i + 1)" />
+            </div>
+        </div>
+    }
+
+
+    <button type="submit" class="btn btn-success">Save Question</button>
+</form>

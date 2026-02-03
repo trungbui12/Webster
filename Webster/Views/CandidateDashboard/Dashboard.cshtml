@@ -1,0 +1,139 @@
+﻿@model Webster.Models.ViewModels.CandidateDashboardVM
+@using Webster.Models.Enums
+
+@{
+    ViewData["Title"] = "Candidate Dashboard";
+    Layout = "~/Views/Shared/_CandidateLayout.cshtml";
+}
+
+<h2 class="mb-3">Welcome, @Model.FullName</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <p>Status: <strong>@Model.Status</strong></p>
+
+        @if (Model.TotalScore.HasValue)
+        {
+            <p>
+                Total Score: <strong>@Model.TotalScore</strong><br />
+                Result:
+                @if (Model.IsPassed == true)
+                {
+                    <span class="text-success fw-bold">PASSED</span>
+                }
+                else
+                {
+                    <span class="text-danger fw-bold">FAILED</span>
+                }
+            </p>
+        }
+        else
+        {
+            <p class="text-muted">You have not completed all tests yet.</p>
+        }
+    </div>
+</div>
+
+<h4 class="mt-4 mb-3">Test Sections</h4>
+
+@{
+    var orderedSections = Model.TestSections
+        .OrderBy(x => x.TestSectionId)
+        .ToList();
+
+    int completedCount = orderedSections.Count(x => x.IsCompleted);
+    int totalSections = orderedSections.Count;
+    int progressPercent = (int)((double)completedCount / totalSections * 100);
+}
+
+<!-- PROGRESS BAR -->
+<div class="mb-4">
+    <label class="form-label fw-bold">Overall Progress</label>
+    <div class="progress">
+        <div class="progress-bar bg-success"
+             role="progressbar"
+             style="width: @progressPercent%">
+            @progressPercent%
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Section</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < orderedSections.Count; i++)
+        {
+            var s = orderedSections[i];
+            bool isLocked = false;
+
+            // Nếu không phải section đầu tiên
+            if (i > 0 && !orderedSections[i - 1].IsCompleted)
+            {
+                isLocked = true;
+            }
+
+            <tr>
+                <td class="fw-bold">@s.SectionType</td>
+
+                <td>
+                    @if (s.IsCompleted)
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else if (s.IsStarted)
+                    {
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                    }
+                    else if (isLocked)
+                    {
+                        <span class="badge bg-secondary">Locked</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-info text-dark">Ready</span>
+                    }
+                </td>
+
+                <td>
+                    @(s.IsCompleted? s.Score.ToString() : "-")
+                </td>
+
+                <td>
+                    @if (isLocked)
+                    {
+                        <span class="text-muted">🔒 Locked</span>
+                    }
+                    else if (!s.IsStarted)
+                    {
+                        <a class="btn btn-sm btn-primary"
+                           asp-controller="CandidateTest"
+                           asp-action="Start"
+                           asp-route-testSectionId="@s.TestSectionId">
+                            Start
+                        </a>
+                    }
+                    else if (!s.IsCompleted)
+                    {
+                        <a class="btn btn-sm btn-warning"
+                           asp-controller="CandidateTest"
+                           asp-action="Start"
+                           asp-route-testSectionId="@s.TestSectionId">
+                            Continue
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Done</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

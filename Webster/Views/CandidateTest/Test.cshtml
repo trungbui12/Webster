@@ -1,0 +1,87 @@
+﻿@model Webster.Models.ViewModels.CandidateTestVM
+
+@{
+    Layout = "~/Views/Shared/_CandidateLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@Model.SectionType Test</h2>
+
+    <div class="alert alert-warning mb-0">
+        Time Remaining: <strong id="timer"></strong>
+    </div>
+</div>
+
+<form asp-action="Submit" method="post" id="testForm">
+    <input type="hidden" asp-for="TestSectionId" />
+
+    <div class="mb-3">
+        <strong>Total Questions:</strong> @Model.Questions.Count
+    </div>
+
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="mb-3">
+                    Question @(i + 1): @Model.Questions[i].Content
+                </h5>
+
+                <input type="hidden" asp-for="Questions[i].QuestionId" />
+
+                @foreach (var answer in Model.Questions[i].Answers)
+                {
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="Questions[@i].SelectedAnswerId"
+                               value="@answer.AnswerId"
+                               required />
+
+                        <label class="form-check-label">
+                            @answer.Content
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-success btn-lg">
+            Submit Test
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // ================= COUNTDOWN TIMER =================
+        var duration = @Model.DurationInMinutes * 60; // convert to seconds
+        var display = document.getElementById('timer');
+
+        function startTimer() {
+            var timer = duration, minutes, seconds;
+
+            var interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    alert("Time is up! Your test will be submitted automatically.");
+                    document.getElementById("testForm").submit();
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            startTimer();
+        };
+    </script>
+}
