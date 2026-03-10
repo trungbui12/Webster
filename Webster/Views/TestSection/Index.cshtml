@@ -1,33 +1,271 @@
 ﻿@model IEnumerable<Webster.Models.Entities.TestSection>
+
 @{
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+    ViewData["Title"] = "Test Section Management";
 }
 
-<h2>Test Sections</h2>
+<div class="space-y-10">
 
-<a asp-action="Create" class="btn btn-primary mb-3">Create Test Section</a>
+    <!-- HEADER -->
+    <div class="flex justify-between items-center">
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Section</th>
-            <th>Duration (min)</th>
-            <th>Total Questions</th>
-            <th width="200">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var s in Model)
+        <div>
+            <p class="text-sm text-gray-400">Dashboard / Test Sections</p>
+
+            <h1 class="text-3xl font-bold text-gray-800 mt-1">
+                Test Section Management
+            </h1>
+        </div>
+
+        <a asp-action="Create"
+           class="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-indigo-700 transition">
+
+            <i class="bi bi-plus-lg"></i>
+            Create Section
+
+        </a>
+
+    </div>
+
+
+    <!-- STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <!-- TOTAL SECTIONS -->
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center hover:scale-[1.02] transition">
+
+            <div>
+                <p class="text-sm opacity-80">Total Sections</p>
+
+                <p class="text-3xl font-bold mt-2">
+                    @Model.Count()
+                </p>
+            </div>
+
+            <i class="bi bi-diagram-3 text-5xl opacity-30"></i>
+
+        </div>
+
+
+        <!-- TOTAL QUESTIONS -->
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+
+            <div>
+                <p class="text-sm text-gray-500">Total Questions</p>
+
+                <p class="text-3xl font-bold text-green-600 mt-2">
+                    @Model.Sum(s => s.TotalQuestions)
+                </p>
+            </div>
+
+            <i class="bi bi-journal-text text-4xl text-green-500"></i>
+
+        </div>
+
+
+        <!-- TOTAL DURATION -->
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+
+            <div>
+                <p class="text-sm text-gray-500">Total Duration</p>
+
+                <p class="text-3xl font-bold text-indigo-600 mt-2">
+                    @Model.Sum(s => s.DurationInMinutes) min
+                </p>
+            </div>
+
+            <i class="bi bi-clock text-4xl text-indigo-500"></i>
+
+        </div>
+
+
+        <!-- AVG QUESTIONS -->
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+
+            <div>
+                <p class="text-sm text-gray-500">Avg Questions</p>
+
+                <p class="text-3xl font-bold text-purple-600 mt-2">
+                    @(Model.Any() ? Math.Round(Model.Average(s => s.TotalQuestions), 1) : 0)
+                </p>
+            </div>
+
+            <i class="bi bi-bar-chart text-4xl text-purple-500"></i>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN CARD -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+
+        <!-- SEARCH + TOOLBAR -->
+        <div class="flex justify-between items-center p-6 border-b">
+
+            <div class="relative w-80">
+
+                <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
+
+                <input id="searchInput"
+                       placeholder="Search section..."
+                       class="w-full border border-gray-200 rounded-lg pl-9 pr-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+
+            </div>
+
+            <p class="text-sm text-gray-400">
+                @Model.Count() sections
+            </p>
+
+        </div>
+
+
+        <!-- EMPTY STATE -->
+        @if (!Model.Any())
         {
-            <tr>
-                <td>@s.SectionType</td>
-                <td>@s.DurationInMinutes</td>
-                <td>@s.TotalQuestions</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@s.TestSectionId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@s.TestSectionId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
+
+            <div class="text-center py-20 text-gray-400">
+
+                <i class="bi bi-diagram-3 text-5xl mb-3"></i>
+
+                <p class="text-lg">No test sections found</p>
+
+            </div>
+
         }
-    </tbody>
-</table>
+        else
+        {
+
+            <!-- SECTION GRID -->
+            <div id="sectionContainer"
+                 class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+
+                @foreach (var s in Model)
+                {
+
+                    <div class="searchable border rounded-xl p-6 hover:shadow-xl hover:-translate-y-1 transition bg-white">
+
+                        <!-- CARD HEADER -->
+                        <div class="flex justify-between items-center mb-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+
+                                    <i class="bi bi-diagram-3"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h3 class="font-semibold text-gray-800">
+                                        @s.SectionType
+                                    </h3>
+
+                                    <p class="text-xs text-gray-400">
+                                        ID: @s.TestSectionId
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SECTION INFO -->
+                        <div class="space-y-3 mb-6">
+
+                            <div class="flex justify-between text-sm">
+
+                                <span class="text-gray-500 flex items-center gap-2">
+                                    <i class="bi bi-clock"></i>
+                                    Duration
+                                </span>
+
+                                <span class="font-semibold text-indigo-600">
+                                    @s.DurationInMinutes min
+                                </span>
+
+                            </div>
+
+
+                            <div class="flex justify-between text-sm">
+
+                                <span class="text-gray-500 flex items-center gap-2">
+                                    <i class="bi bi-journal-text"></i>
+                                    Questions
+                                </span>
+
+                                <span class="font-semibold text-green-600">
+                                    @s.TotalQuestions
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+                        <div class="flex gap-2">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@s.TestSectionId"
+                               class="flex-1 text-center px-3 py-2 text-sm rounded-lg bg-yellow-400 text-white hover:bg-yellow-500 transition">
+
+                                <i class="bi bi-pencil"></i>
+                                Edit
+
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@s.TestSectionId"
+                               class="flex-1 text-center px-3 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600 transition">
+
+                                <i class="bi bi-trash"></i>
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        const searchInput = document.getElementById("searchInput");
+        const items = document.querySelectorAll(".searchable");
+
+        searchInput.addEventListener("keyup", function () {
+
+            const value = this.value.toLowerCase();
+
+            items.forEach(item => {
+
+                const text = item.innerText.toLowerCase();
+
+                item.style.display = text.includes(value)
+                    ? "block"
+                    : "none";
+
+            });
+
+        });
+
+    </script>
+
+}

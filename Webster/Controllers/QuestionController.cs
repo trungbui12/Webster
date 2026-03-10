@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Webster.Data;
 using Webster.Models.Entities;
+using Webster.Models.Enums;
 using Webster.Models.ViewModels;
 
 namespace Webster.Controllers
@@ -16,12 +17,26 @@ namespace Webster.Controllers
         }
 
         // ================= LIST =================
-        public IActionResult Index()
+        // ================= LIST WITH PAGINATION =================
+        public IActionResult Index(int page = 1)
         {
-            var questions = _context.Questions
+            int pageSize = 5;
+
+            var query = _context.Questions
                 .Include(q => q.TestSection)
                 .Include(q => q.Answers)
+                .OrderByDescending(q => q.QuestionId);
+
+            int totalItems = query.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var questions = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
+
+            ViewBag.PageNumber = page;
+            ViewBag.TotalPages = totalPages;
 
             return View(questions);
         }
@@ -58,29 +73,56 @@ namespace Webster.Controllers
                 TestSectionId = vm.TestSectionId,
                 Content = vm.Content,
                 Score = vm.Score,
-                Difficulty = vm.Difficulty
+                Difficulty = vm.Difficulty,
+                QuestionType = vm.QuestionType
             };
 
             _context.Questions.Add(question);
             _context.SaveChanges();
 
-            // 🔥 lưu 4 đáp án
-            for (int i = 0; i < vm.Answers.Count; i++)
+            // ===== SINGLE / MULTIPLE =====
+            if (vm.QuestionType == QuestionType.SingleChoice ||
+                vm.QuestionType == QuestionType.MultipleChoice ||
+                vm.QuestionType == QuestionType.TrueFalse)
+            {
+                for (int i = 0; i < vm.Answers.Count; i++)
+                {
+                    bool isCorrect = false;
+
+                    if (vm.QuestionType == QuestionType.SingleChoice)
+                        isCorrect = (i == vm.CorrectAnswerId);
+
+                    if (vm.QuestionType == QuestionType.MultipleChoice)
+                        isCorrect = vm.CorrectAnswerIds.Contains(i);
+
+                    _context.Answers.Add(new Answer
+                    {
+                        QuestionId = question.QuestionId,
+                        Content = vm.Answers[i].Content,
+                        IsCorrect = isCorrect
+                    });
+                }
+            }
+
+            // ===== TEXT =====
+            if (vm.QuestionType == QuestionType.Text)
             {
                 _context.Answers.Add(new Answer
                 {
                     QuestionId = question.QuestionId,
-                    Content = vm.Answers[i].Content,
-                    IsCorrect = (i == vm.CorrectAnswerId)
+                    Content = vm.CorrectTextAnswer!,
+                    IsCorrect = true
                 });
             }
 
             _context.SaveChanges();
+
             return RedirectToAction(nameof(Index));
         }
 
 
         // ================= EDIT =================
+        // ================= EDIT (GET) =================
         public IActionResult Edit(int id)
         {
             var q = _context.Questions
@@ -96,22 +138,46 @@ namespace Webster.Controllers
                 Content = q.Content,
                 Score = q.Score,
                 Difficulty = q.Difficulty,
+                QuestionType = q.QuestionType
+            };
 
-                // 🔥 lấy đáp án đúng hiện tại
-                CorrectAnswerId = q.Answers.First(a => a.IsCorrect).AnswerId,
-
-                Answers = q.Answers.Select(a => new AnswerEditVM
+            // ===== TEXT =====
+            if (q.QuestionType == QuestionType.Text)
+            {
+                vm.CorrectTextAnswer = q.Answers.FirstOrDefault()?.Content;
+            }
+            else
+            {
+                vm.Answers = q.Answers.Select(a => new AnswerEditVM
                 {
                     AnswerId = a.AnswerId,
                     Content = a.Content
-                }).ToList()
-            };
+                }).ToList();
+
+                // ===== SINGLE / TRUE FALSE =====
+                if (q.QuestionType == QuestionType.SingleChoice ||
+                    q.QuestionType == QuestionType.TrueFalse)
+                {
+                    vm.CorrectAnswerId = q.Answers
+                        .FirstOrDefault(a => a.IsCorrect)?.AnswerId;
+                }
+
+                // ===== MULTIPLE =====
+                if (q.QuestionType == QuestionType.MultipleChoice)
+                {
+                    vm.CorrectAnswerIds = q.Answers
+                        .Where(a => a.IsCorrect)
+                        .Select(a => a.AnswerId)
+                        .ToList();
+                }
+            }
 
             ViewBag.TestSections = _context.TestSections.ToList();
             return View(vm);
         }
 
 
+        // ================= EDIT (POST) =================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(QuestionEditVM vm)
@@ -128,18 +194,64 @@ namespace Webster.Controllers
 
             if (q == null) return NotFound();
 
+            // ===== UPDATE BASIC INFO =====
             q.TestSectionId = vm.TestSectionId;
             q.Content = vm.Content;
             q.Score = vm.Score;
             q.Difficulty = vm.Difficulty;
+            q.QuestionType = vm.QuestionType;
 
-            // 🔥 Update Answers
-            foreach (var answer in q.Answers)
+            // ===== TEXT QUESTION =====
+            if (vm.QuestionType == QuestionType.Text)
             {
-                var vmAns = vm.Answers.First(a => a.AnswerId == answer.AnswerId);
+                // Xoá đáp án cũ
+                _context.Answers.RemoveRange(q.Answers);
 
-                answer.Content = vmAns.Content;
-                answer.IsCorrect = (answer.AnswerId == vm.CorrectAnswerId);
+                // Thêm đáp án text mới
+                _context.Answers.Add(new Answer
+                {
+                    QuestionId = q.QuestionId,
+                    Content = vm.CorrectTextAnswer!,
+                    IsCorrect = true
+                });
+            }
+            else
+            {
+                // ===== UPDATE ANSWERS CONTENT =====
+                foreach (var answer in q.Answers)
+                {
+                    var vmAns = vm.Answers
+                        .FirstOrDefault(a => a.AnswerId == answer.AnswerId);
+
+                    if (vmAns != null)
+                        answer.Content = vmAns.Content;
+
+                    answer.IsCorrect = false;
+                }
+
+                // ===== SINGLE / TRUE FALSE =====
+                if (vm.QuestionType == QuestionType.SingleChoice ||
+                    vm.QuestionType == QuestionType.TrueFalse)
+                {
+                    var correct = q.Answers
+                        .FirstOrDefault(a => a.AnswerId == vm.CorrectAnswerId);
+
+                    if (correct != null)
+                        correct.IsCorrect = true;
+                }
+
+                // ===== MULTIPLE =====
+                if (vm.QuestionType == QuestionType.MultipleChoice)
+                {
+                    foreach (var id in vm.CorrectAnswerIds)
+                    {
+                        var correct = q.Answers
+                            .FirstOrDefault(a => a.AnswerId == id);
+
+                        if (correct != null)
+                            correct.IsCorrect = true;
+                    }
+                }
             }
 
             _context.SaveChanges();

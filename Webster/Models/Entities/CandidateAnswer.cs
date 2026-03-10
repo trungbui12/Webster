@@ -14,8 +14,11 @@ namespace Webster.Models.Entities
         [Required]
         public int QuestionId { get; set; }
 
-        [Required]
-        public int AnswerId { get; set; }
+        // Cho Single / Multiple
+        public int? AnswerId { get; set; }
+
+        // Cho Text answer
+        public string? TextAnswer { get; set; }
 
         public DateTime AnsweredAt { get; set; }
 
@@ -26,6 +29,6 @@ namespace Webster.Models.Entities
         public Question Question { get; set; } = null!;
 
         [ForeignKey(nameof(AnswerId))]
-        public Answer Answer { get; set; } = null!;
+        public Answer? Answer { get; set; }
     }
 }

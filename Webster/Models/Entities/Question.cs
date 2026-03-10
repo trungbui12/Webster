@@ -20,6 +20,9 @@ namespace Webster.Models.Entities
 
         [Required]
         public QuestionDifficulty Difficulty { get; set; }
+        
+        [Required]
+        public QuestionType QuestionType { get; set; }
 
         [ForeignKey(nameof(TestSectionId))]
         public TestSection TestSection { get; set; } = null!;

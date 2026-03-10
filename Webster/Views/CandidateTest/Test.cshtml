@@ -1,87 +1,626 @@
 ﻿@model Webster.Models.ViewModels.CandidateTestVM
-
+@using Webster.Models.Enums
 @{
     Layout = "~/Views/Shared/_CandidateLayout.cshtml";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>@Model.SectionType Test</h2>
+<div id="startScreen"
+     class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
 
-    <div class="alert alert-warning mb-0">
-        Time Remaining: <strong id="timer"></strong>
+    <div class="bg-white p-10 rounded-2xl text-center max-w-lg">
+
+        <h2 class="text-3xl font-bold mb-4">
+            Start Test
+        </h2>
+
+        <p class="text-gray-600 mb-6">
+            The test will run in fullscreen mode.
+            Leaving fullscreen, switching tabs, or refreshing will automatically submit your test.
+        </p>
+
+        <button onclick="startExam()"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl">
+            Start Test
+        </button>
+
     </div>
+
 </div>
 
-<form asp-action="Submit" method="post" id="testForm">
-    <input type="hidden" asp-for="TestSectionId" />
+<div class="min-h-screen bg-slate-100 py-6 px-4">
 
-    <div class="mb-3">
-        <strong>Total Questions:</strong> @Model.Questions.Count
-    </div>
+    <div class="max-w-7xl mx-auto grid grid-cols-12 gap-6">
 
-    @for (int i = 0; i < Model.Questions.Count; i++)
-    {
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <h5 class="mb-3">
-                    Question @(i + 1): @Model.Questions[i].Content
-                </h5>
+        <!-- LEFT -->
+        <div class="col-span-9">
 
-                <input type="hidden" asp-for="Questions[i].QuestionId" />
+            <div class="flex justify-between items-center mb-6">
 
-                @foreach (var answer in Model.Questions[i].Answers)
+                <h2 class="text-2xl font-bold text-slate-800">
+                    @Model.SectionType Test
+                </h2>
+
+                <div id="timerBox" class="bg-red-500 text-white px-5 py-2 rounded-full shadow font-semibold">
+                    ⏳ <span id="timer"></span>
+                </div>
+
+            </div>
+
+            <form asp-action="Submit" method="post" id="testForm">
+
+                <input type="hidden" asp-for="TestSectionId" />
+
+                @for (int i = 0; i < Model.Questions.Count; i++)
                 {
-                    <div class="form-check mb-2">
-                        <input class="form-check-input"
-                               type="radio"
-                               name="Questions[@i].SelectedAnswerId"
-                               value="@answer.AnswerId"
-                               required />
+                    var q = Model.Questions[i];
 
-                        <label class="form-check-label">
-                            @answer.Content
-                        </label>
+                    <div id="q@i"
+                         data-question-id="@q.QuestionId"
+                         class="question-card bg-white rounded-2xl shadow-sm border p-6 mb-6">
+
+                        <h4 class="font-semibold mb-2">
+                            Question @(i + 1)
+                        </h4>
+
+                        <p class="mb-4">@q.Content</p>
+
+                        <input type="hidden" asp-for="Questions[i].QuestionId" />
+
+                        @if (q.QuestionType == QuestionType.SingleChoice
+                                            || q.QuestionType == QuestionType.TrueFalse)
+                        {
+                            foreach (var a in q.Answers)
+                            {
+                                <label class="flex gap-3 p-3 border rounded-xl mb-2 cursor-pointer">
+
+                                    <input type="radio"
+                                           name="Questions[@i].SelectedAnswerId"
+                                           value="@a.AnswerId"
+                                           class="answer-input"
+                                           onchange="saveAnswer(@q.QuestionId,@a.AnswerId,@i)" />
+
+                                    <span>@a.Content</span>
+
+                                </label>
+                            }
+                        }
+
+                        else if (q.QuestionType == QuestionType.MultipleChoice)
+                        {
+                            foreach (var a in q.Answers)
+                            {
+                                <label class="flex gap-3 p-3 border rounded-xl mb-2 cursor-pointer">
+
+                                    <input type="checkbox"
+                                           name="Questions[@i].SelectedAnswerIds"
+                                           value="@a.AnswerId"
+                                           class="answer-input"
+                                           onchange="saveMultiple(@q.QuestionId,@i)" />
+
+                                    <span>@a.Content</span>
+
+                                </label>
+                            }
+                        }
+
+                        else if (q.QuestionType == QuestionType.Text)
+                        {
+        <textarea name="Questions[@i].TextAnswer"
+          class="w-full border rounded-xl p-3"
+          rows="3"
+          onkeyup="saveTextAnswer(@q.QuestionId,this.value,@i)"
+          placeholder="Enter answer..."></textarea>
+                        }
+
                     </div>
                 }
-            </div>
+
+                <div class="text-center mt-8 mb-10">
+
+                    <button type="button"
+                            onclick="openSubmitModal()"
+                            id="submitBtn"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-xl">
+                        Submit Test
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
-    }
 
-    <div class="text-center">
-        <button type="submit" class="btn btn-success btn-lg">
-            Submit Test
-        </button>
+        <!-- RIGHT PANEL -->
+
+        <div class="col-span-3 space-y-6">
+
+            <div class="bg-white rounded-2xl shadow p-6">
+
+                <h4 class="font-semibold mb-4">Progress</h4>
+
+                <div class="flex justify-between text-sm mb-2">
+                    <span>Answered</span>
+                    <span id="answeredCount">0</span>
+                </div>
+
+                <div class="flex justify-between text-sm mb-4">
+                    <span>Remaining</span>
+                    <span id="remainingCount">@Model.Questions.Count</span>
+                </div>
+
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                    <div id="progressBar" class="bg-blue-600 h-2 rounded-full" style="width:0%"></div>
+                </div>
+
+            </div>
+
+            <div class="bg-white rounded-2xl shadow p-6">
+
+                <h4 class="font-semibold mb-4 text-slate-800">
+                    📌 Test Tips
+                </h4>
+
+                <ul class="space-y-3 text-sm text-slate-600">
+
+                    <li class="flex gap-2">
+                        <span class="text-blue-500">•</span>
+                        <span>Read each question carefully before answering.</span>
+                    </li>
+
+                    <li class="flex gap-2">
+                        <span class="text-blue-500">•</span>
+                        <span>Your answers are saved automatically.</span>
+                    </li>
+
+                    <li class="flex gap-2">
+                        <span class="text-blue-500">•</span>
+                        <span>Do not refresh the page or close the browser during the test.</span>
+                    </li>
+
+                    <li class="flex gap-2">
+                        <span class="text-blue-500">•</span>
+                        <span>Switching tabs or exiting fullscreen may submit your test automatically.</span>
+                    </li>
+
+                    <li class="flex gap-2">
+                        <span class="text-blue-500">•</span>
+                        <span>Make sure to review all answers before submitting.</span>
+                    </li>
+
+                    <li class="flex gap-2">
+                        <span class="text-blue-500">•</span>
+                        <span>Time will automatically submit your test when it expires.</span>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
     </div>
-</form>
+</div>
+<!-- SUBMIT CONFIRM MODAL -->
 
+<div id="submitModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl p-8 w-[420px] text-center shadow-xl">
+
+        <h3 class="text-xl font-bold mb-3">
+            Submit Test
+        </h3>
+
+        <p class="text-gray-600 mb-6">
+            Are you sure you want to submit your test?
+            You will not be able to change your answers afterwards.
+        </p>
+
+        <div class="flex justify-center gap-4">
+
+            <button onclick="closeSubmitModal()"
+                    class="px-6 py-2 rounded-lg border hover:bg-gray-100">
+                Cancel
+            </button>
+
+            <button onclick="confirmSubmitFinal()"
+                    id="confirmSubmitBtn"
+                    class="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                Submit Test
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 @section Scripts {
     <script>
-        // ================= COUNTDOWN TIMER =================
-        var duration = @Model.DurationInMinutes * 60; // convert to seconds
-        var display = document.getElementById('timer');
+                let answered = new Set()
+        let totalQuestions = @Model.Questions.Count
+        let submitted = false
+        let devtoolsOpen = false
 
-        function startTimer() {
-            var timer = duration, minutes, seconds;
+                // ================= OPEN SUBMIT MODAL =================
 
-            var interval = setInterval(function () {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
+        function openSubmitModal(){
 
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
+            let modal = document.getElementById("submitModal")
 
-                display.textContent = minutes + ":" + seconds;
+            modal.classList.remove("hidden")
+            modal.classList.add("flex")
 
-                if (--timer < 0) {
-                    clearInterval(interval);
-                    alert("Time is up! Your test will be submitted automatically.");
-                    document.getElementById("testForm").submit();
-                }
-            }, 1000);
         }
 
-        window.onload = function () {
-            startTimer();
-        };
+        // ================= CLOSE SUBMIT MODAL =================
+
+        function closeSubmitModal(){
+
+            let modal = document.getElementById("submitModal")
+
+            modal.classList.remove("flex")
+            modal.classList.add("hidden")
+
+        }
+                // ================= FINAL CONFIRM SUBMIT =================
+
+
+        // ================= START EXAM =================
+
+        function startExam(){
+
+            enterFullscreen()
+
+            let screen = document.getElementById("startScreen")
+            if(screen) screen.remove()
+
+            startTimer()
+
+            restoreAnswers()
+
+        }
+
+        // ================= FULLSCREEN =================
+
+        function enterFullscreen(){
+
+            let elem = document.documentElement
+
+            if(elem.requestFullscreen){
+                elem.requestFullscreen()
+            }
+            else if(elem.webkitRequestFullscreen){
+                elem.webkitRequestFullscreen()
+            }
+            else if(elem.msRequestFullscreen){
+                elem.msRequestFullscreen()
+            }
+
+        }
+
+        document.addEventListener("fullscreenchange",function(){
+
+            if(!document.fullscreenElement && !submitted){
+
+                alert("You exited fullscreen. Test will be submitted.")
+
+                submitTest()
+
+            }
+
+        })
+
+        // ================= SAVE SINGLE =================
+
+        function saveAnswer(questionId,answerId,index){
+
+        fetch("/CandidateTest/SaveAnswer",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+        questionId:questionId,
+        answerId:answerId
+        })
+        })
+
+        markAnswered(index)
+
+        }
+
+        // ================= SAVE MULTIPLE =================
+
+        function saveMultiple(questionId,index){
+
+        let card=document.querySelector(`[data-question-id='${questionId}']`)
+
+        let selected=[]
+
+        card.querySelectorAll("input[type=checkbox]:checked")
+        .forEach(x=>selected.push(parseInt(x.value)))
+
+        fetch("/CandidateTest/SaveAnswer",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+        questionId:questionId,
+        answerIds:selected
+        })
+        })
+
+        markAnswered(index)
+
+        }
+
+        // ================= SAVE TEXT =================
+
+        function saveTextAnswer(questionId,text,index){
+
+        fetch("/CandidateTest/SaveAnswer",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+        questionId:questionId,
+        textAnswer:text
+        })
+        })
+
+        markAnswered(index)
+
+        }
+
+        // ================= RESTORE ANSWERS =================
+
+        function restoreAnswers(){
+
+        fetch("/CandidateTest/GetSavedAnswers?testSectionId=@Model.TestSectionId")
+        .then(r=>r.json())
+        .then(data=>{
+
+        data.forEach(a=>{
+
+        let card=document.querySelector(`[data-question-id='${a.questionId}']`)
+        if(!card) return
+
+        let index=[...document.querySelectorAll(".question-card")].indexOf(card)
+
+        if(a.answerId){
+
+        let input=card.querySelector(`input[value='${a.answerId}']`)
+        if(input) input.checked=true
+
+        markAnswered(index)
+
+        }
+
+        if(a.answerIds){
+
+        a.answerIds.forEach(id=>{
+        let input=card.querySelector(`input[value='${id}']`)
+        if(input) input.checked=true
+        })
+
+        markAnswered(index)
+
+        }
+
+        if(a.textAnswer){
+
+        let textarea=card.querySelector("textarea")
+        if(textarea) textarea.value=a.textAnswer
+
+        markAnswered(index)
+
+        }
+
+        })
+
+        })
+
+        }
+
+        // ================= PROGRESS =================
+
+        function markAnswered(index){
+
+        answered.add(index)
+
+        updateStats()
+
+        }
+
+        function updateStats(){
+
+        let done=answered.size
+        let remain=totalQuestions-done
+
+        document.getElementById("answeredCount").innerText=done
+        document.getElementById("remainingCount").innerText=remain
+
+        document.getElementById("progressBar").style.width=(done/totalQuestions*100)+"%"
+
+        }
+
+        // ================= TIMER =================
+
+        function startTimer(){
+
+        let end=new Date("@Model.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")").getTime()
+
+        let interval=setInterval(()=>{
+
+        let remain=Math.floor((end-Date.now())/1000)
+
+        if(remain<=0){
+
+        clearInterval(interval)
+
+        alert("Time is up")
+
+        submitTest()
+
+        }
+
+        let m=Math.floor(remain/60)
+        let s=remain%60
+
+        document.getElementById("timer").innerText=
+        (m<10?"0":"")+m+":"+(s<10?"0":"")+s
+
+        },1000)
+
+        }
+
+        // ================= TAB SWITCH =================
+
+        document.addEventListener("visibilitychange",function(){
+
+        if(document.hidden && !submitted){
+
+        alert("Tab switching detected. Test submitted.")
+
+        submitTest()
+
+        }
+
+        })
+
+        // ================= BLOCK REFRESH =================
+
+        document.addEventListener("keydown",function(e){
+
+        if(e.key==="F5" || (e.ctrlKey && e.key==="r")){
+
+        e.preventDefault()
+
+        alert("Refresh detected. Test submitted.")
+
+        submitTest()
+
+        }
+
+        })
+                // ================= BLOCK ESC FULLSCREEN =================
+
+        document.addEventListener("keydown",function(e){
+
+        if(e.key==="Escape" && !submitted){
+
+        alert("Exiting fullscreen is not allowed.")
+
+        enterFullscreen()
+
+        }
+
+        })
+        // ================= AUTO SUBMIT CLOSE TAB =================
+
+        window.addEventListener("beforeunload",function(){
+
+        if(submitted) return
+
+        navigator.sendBeacon(
+        "/CandidateTest/AutoSubmit?testSectionId=@Model.TestSectionId"
+        )
+
+        })
+
+
+        // ================= SUBMIT =================
+        // ================= SUBMIT =================
+        function confirmSubmitFinal(){
+
+            closeSubmitModal()
+
+            submitTest()
+
+        }
+        function submitTest(){
+
+            if(submitted) return
+
+            submitted = true
+
+        document.getElementById("confirmSubmitBtn").innerText = "Submitting..."
+
+            let formData = new FormData(document.getElementById("testForm"))
+
+            fetch("/CandidateTest/Submit",{
+                method:"POST",
+                body:formData
+            })
+            .then(r => {
+
+                if(!r.ok){
+                    submitted = false
+                    document.getElementById("submitBtn").innerText = "Submit Test"
+                    alert("Submit failed. Please try again.")
+                    return
+                }
+
+                // submit thành công → mới thoát fullscreen
+                if(document.fullscreenElement){
+                    document.exitFullscreen()
+                }
+
+                window.location.href="/CandidateDashboard/Dashboard"
+
+            })
+
+        }
+
+        // ================= COPY BLOCK =================
+
+        document.addEventListener("copy",function(e){
+        e.preventDefault()
+        })
+
+        // ================= PASTE BLOCK =================
+
+        document.addEventListener("paste",function(e){
+        e.preventDefault()
+        })
+
+        // ================= RIGHT CLICK BLOCK =================
+
+        document.addEventListener("contextmenu",function(e){
+        e.preventDefault()
+        })
+
+        // ================= TEXT SELECT BLOCK =================
+
+        document.addEventListener("selectstart",function(e){
+
+            let tag = e.target.tagName
+
+            if(tag !== "TEXTAREA" && tag !== "INPUT" && tag !== "BUTTON"){
+                e.preventDefault()
+            }
+
+        })
+
+        // ================= DEVTOOLS DETECT =================
+
+        setInterval(function(){
+
+        let threshold = 200
+
+        if(
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+        ){
+
+        if(!devtoolsOpen){
+
+        devtoolsOpen=true
+
+        alert("Developer tools detected. Test submitted.")
+
+        submitTest()
+
+        }
+
+        }
+
+        },1000)
     </script>
 }

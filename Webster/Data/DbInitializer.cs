@@ -17,7 +17,7 @@ namespace Webster.Data
                 {
                     FullName = "System Manager",
                     Username = "admin",
-                    PasswordHash = PasswordHasher.Hash("123456")
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456")
                 };
 
                 context.Managers.Add(manager);
@@ -33,7 +33,7 @@ namespace Webster.Data
                     Phone = "0123456789",
                     DateOfBirth = new DateTime(2000, 1, 1),
                     Username = "candidate",
-                    PasswordHash = PasswordHasher.Hash("123456"),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
                     Status = CandidateStatus.Created
                 };
 

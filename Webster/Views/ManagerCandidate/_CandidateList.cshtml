@@ -1,0 +1,163 @@
+﻿@model List<Webster.Models.ViewModels.ManagerCandidateListVM>
+
+@if (!Model.Any())
+{
+    <div class="bg-white rounded-2xl shadow p-12 text-center text-gray-500">
+        <div class="text-5xl mb-3">👤</div>
+        <p class="text-lg">No candidates found</p>
+    </div>
+}
+else
+{
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+        @foreach (var item in Model)
+        {
+            var progress = item.TotalSections == 0
+            ? 0
+            : (int)((double)item.CompletedSections / item.TotalSections * 100);
+
+            var statusColor = item.IsPassed == true
+            ? "bg-green-100 text-green-700"
+            : item.IsPassed == false
+            ? "bg-red-100 text-red-700"
+            : "bg-yellow-100 text-yellow-700";
+
+            var statusIcon = item.IsPassed == true
+            ? "fa-circle-check"
+            : item.IsPassed == false
+            ? "fa-circle-xmark"
+            : "fa-clock";
+
+            var statusText = item.IsPassed == true
+            ? "Passed"
+            : item.IsPassed == false
+            ? "Failed"
+            : "In Progress";
+
+            <div class="bg-white border border-gray-100 rounded-2xl shadow-sm p-6
+                                hover:shadow-xl hover:-translate-y-1 transition duration-200">
+
+                <!-- HEADER -->
+
+                <div class="flex items-center gap-4 mb-5">
+
+                    <!-- Avatar -->
+
+                    <div class="relative">
+
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500
+                                            text-white flex items-center justify-center
+                                            font-bold text-lg shadow">
+
+                            @item.FullName.Substring(0, 1)
+
+                        </div>
+
+                        <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full"></span>
+
+                    </div>
+
+
+                    <div class="flex-1">
+
+                        <div class="font-semibold text-gray-800 text-sm">
+                            @item.FullName
+                        </div>
+
+                        <div class="text-xs text-gray-500 truncate">
+                            @item.Email
+                        </div>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <span class="flex items-center gap-1 px-3 py-1 text-xs rounded-full font-medium @statusColor">
+
+                        <i class="fa-solid @statusIcon text-[10px]"></i>
+
+                        @statusText
+
+                    </span>
+
+                </div>
+
+
+                <!-- PROGRESS -->
+
+                <div class="mb-5">
+
+                    <div class="flex justify-between text-xs text-gray-500 mb-2">
+
+                        <span>
+                            Section Progress
+                        </span>
+
+                        <span class="font-medium">
+                            @progress%
+                        </span>
+
+                    </div>
+
+                    <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-700"
+                             style="width:@progress%">
+                        </div>
+
+                    </div>
+
+                    <div class="text-xs text-gray-400 mt-1">
+                        @item.CompletedSections / @item.TotalSections sections
+                    </div>
+
+                </div>
+
+
+                <!-- STATS -->
+
+                <div class="flex justify-between items-center border-t pt-4">
+
+                    <!-- SCORE -->
+
+                    <div>
+
+                        <div class="text-xs text-gray-400 mb-1">
+                            Score
+                        </div>
+
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-600
+                                             rounded-lg text-sm font-semibold">
+
+                            @(item.TotalScore ?? 0)
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- COMPLETED -->
+
+                    <div class="text-right">
+
+                        <div class="text-xs text-gray-400 mb-1">
+                            Completed
+                        </div>
+
+                        <div class="text-sm font-medium text-gray-700">
+
+                            @(item.CompletedAt?.ToString("dd/MM/yyyy") ?? "-")
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+}

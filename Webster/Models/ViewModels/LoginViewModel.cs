@@ -10,7 +10,5 @@ namespace Webster.Models.ViewModels
         [Required, DataType(DataType.Password)]
         public string Password { get; set; } = null!;
 
-        [Required]
-        public string Role { get; set; } = null!; // "Manager" | "Candidate"
     }
 }

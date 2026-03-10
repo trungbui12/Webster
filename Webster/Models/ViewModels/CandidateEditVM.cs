@@ -8,6 +8,7 @@ namespace Webster.Models.ViewModels
     {
         public int CandidateId { get; set; }
 
+        // ===== BASIC =====
         [Required]
         public string FullName { get; set; } = null!;
 
@@ -20,5 +21,16 @@ namespace Webster.Models.ViewModels
         public DateTime DateOfBirth { get; set; }
 
         public CandidateStatus Status { get; set; }
+
+        // ===== EDUCATION =====
+        public string? Degree { get; set; }
+        public string? University { get; set; }
+        [Required]
+        public int GraduationYear { get; set; }
+
+        // ===== EXPERIENCE =====
+        [Required]
+        public int YearsOfExperience { get; set; }
+        public string? PreviousCompany { get; set; }
     }
 }

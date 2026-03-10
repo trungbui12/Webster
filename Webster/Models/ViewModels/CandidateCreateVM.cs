@@ -4,6 +4,7 @@ namespace Webster.Models.ViewModels
 {
     public class CandidateCreateVM
     {
+        // ===== BASIC INFO =====
         [Required, MaxLength(100)]
         public string FullName { get; set; } = null!;
 
@@ -21,5 +22,21 @@ namespace Webster.Models.ViewModels
 
         [Required, MinLength(6)]
         public string Password { get; set; } = null!;
+
+        // ===== EDUCATION =====
+        [Required]
+        public string Degree { get; set; } = null!;
+
+        [Required]
+        public string University { get; set; } = null!;
+
+        [Required]
+        public int GraduationYear { get; set; }
+
+        // ===== EXPERIENCE =====
+        [Required]
+        public int YearsOfExperience { get; set; }
+
+        public string? PreviousCompany { get; set; }
     }
 }

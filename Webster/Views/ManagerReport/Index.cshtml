@@ -1,0 +1,326 @@
+﻿@model Webster.Models.ViewModels.ReportDashboardVM
+@{
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+    ViewData["Title"] = "Report Dashboard";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="space-y-10">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center">
+
+        <div>
+            <p class="text-sm text-gray-400">Dashboard / Reports</p>
+
+            <h1 class="text-3xl font-bold text-gray-800 mt-1">
+                Report Dashboard
+            </h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+
+            <div class="flex bg-gray-100 rounded-lg overflow-hidden text-sm">
+
+                <a href="?filter=today" class="px-4 py-2 hover:bg-white transition">Today</a>
+                <a href="?filter=week" class="px-4 py-2 hover:bg-white transition">Week</a>
+                <a href="?filter=month" class="px-4 py-2 hover:bg-white transition">Month</a>
+
+            </div>
+
+            <a asp-action="ExportExcel"
+               class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition">
+
+                <i class="bi bi-file-earmark-excel"></i>
+                Export
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATS -->
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <!-- TOTAL -->
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center hover:scale-[1.02] transition">
+
+            <div>
+                <p class="text-sm opacity-80">Total Tests</p>
+
+                <p class="text-3xl font-bold mt-2">
+                    @Model.TotalTests
+                </p>
+            </div>
+
+            <i class="bi bi-clipboard-data text-5xl opacity-30"></i>
+
+        </div>
+
+
+        <!-- PASS -->
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+
+            <div>
+                <p class="text-sm text-gray-500">Passed</p>
+
+                <p class="text-3xl font-bold text-green-600 mt-2">
+                    @Model.Passed
+                </p>
+            </div>
+
+            <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center text-green-600 text-xl">
+                <i class="bi bi-check-circle"></i>
+            </div>
+
+        </div>
+
+
+        <!-- FAIL -->
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+
+            <div>
+                <p class="text-sm text-gray-500">Failed</p>
+
+                <p class="text-3xl font-bold text-red-600 mt-2">
+                    @Model.Failed
+                </p>
+            </div>
+
+            <div class="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center text-red-600 text-xl">
+                <i class="bi bi-x-circle"></i>
+            </div>
+
+        </div>
+
+
+        <!-- AVG -->
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+
+            <div>
+                <p class="text-sm text-gray-500">Average Score</p>
+
+                <p class="text-3xl font-bold text-indigo-600 mt-2">
+                    @Model.AverageScore.ToString("0.0")
+                </p>
+            </div>
+
+            <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl">
+                <i class="bi bi-graph-up"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHARTS -->
+    <div class="grid lg:grid-cols-2 gap-8">
+
+        <!-- PASS FAIL -->
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+
+            <div class="flex justify-between items-center mb-5">
+
+                <h3 class="font-semibold text-gray-700">
+                    Pass vs Fail
+                </h3>
+
+                <i class="bi bi-pie-chart text-gray-400"></i>
+
+            </div>
+
+            <div class="h-72">
+                <canvas id="passChart"></canvas>
+            </div>
+
+        </div>
+
+
+        <!-- TEST TREND -->
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+
+            <div class="flex justify-between items-center mb-5">
+
+                <h3 class="font-semibold text-gray-700">
+                    Tests Per Day
+                </h3>
+
+                <i class="bi bi-graph-up text-gray-400"></i>
+
+            </div>
+
+            <div class="h-72">
+                <canvas id="testChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOP CANDIDATES -->
+    <div class="bg-white rounded-xl shadow p-6">
+
+        <div class="flex justify-between items-center mb-6">
+
+            <h3 class="font-semibold text-gray-800">
+                Top Candidates
+            </h3>
+
+            <i class="bi bi-trophy text-yellow-500"></i>
+
+        </div>
+
+        <table class="w-full">
+
+            <thead class="text-left text-gray-500 border-b text-sm">
+
+                <tr>
+                    <th class="py-3">Candidate</th>
+                    <th class="py-3 text-right">Score</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var c in Model.TopCandidates)
+                {
+
+                    <tr class="border-b hover:bg-gray-50 transition">
+
+                        <td class="py-4 flex items-center gap-3">
+
+                            <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center text-sm font-semibold">
+                                @c.Name.Substring(0, 1)
+                            </div>
+
+                            <div>
+
+                                <p class="font-medium text-gray-800">
+                                    @c.Name
+                                </p>
+
+                                <div class="w-40 bg-gray-200 h-2 rounded mt-1">
+
+                                    <div class="bg-indigo-500 h-2 rounded"
+                                         style="width:@(c.Score)%"></div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td class="py-4 text-right font-semibold text-indigo-600 text-lg">
+                            @c.Score
+                        </td>
+
+                    </tr>
+
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        const passChart = new Chart(document.getElementById('passChart'), {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: ['Pass','Fail'],
+
+                datasets: [{
+
+                    data: [@Model.Passed, @Model.Failed],
+
+                    backgroundColor: [
+                        '#22c55e',
+                        '#ef4444'
+                    ],
+
+                    borderWidth: 0
+
+                }]
+
+            },
+
+            options: {
+
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+
+                cutout: '65%'
+
+            }
+
+        });
+
+
+        const testChart = new Chart(document.getElementById('testChart'), {
+
+            type: 'line',
+
+            data: {
+
+                labels: @Html.Raw(Json.Serialize(Model.TestDates)),
+
+                datasets: [{
+
+                    label: 'Tests',
+
+                    data: @Html.Raw(Json.Serialize(Model.TestCounts)),
+
+                    borderColor: '#6366f1',
+
+                    backgroundColor: 'rgba(99,102,241,0.2)',
+
+                    tension: 0.4,
+
+                    fill: true,
+
+                    pointRadius: 4
+
+                }]
+
+            },
+
+            options: {
+
+                plugins: {
+                    legend: { display:false }
+                },
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true
+                    }
+
+                }
+
+            }
+
+        });
+
+    </script>
+
+}

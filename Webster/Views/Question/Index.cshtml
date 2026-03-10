@@ -1,33 +1,271 @@
 ﻿@model IEnumerable<Webster.Models.Entities.Question>
+
 @{
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+    ViewData["Title"] = "Question Management";
+
+    int pageNumber = ViewBag.PageNumber ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+
+    var sections = Model.Select(x => x.TestSection.SectionType.ToString()).Distinct().ToList();
 }
 
-<h2>Question List</h2>
+<div class="max-w-7xl mx-auto px-6 py-10">
 
-<a asp-action="Create" class="btn btn-primary mb-3">Create Question</a>
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-8">
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Content</th>
-            <th>Section</th>
-            <th>Score</th>
-            <th width="200">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var q in Model)
+        <div>
+
+            <!-- Web Map / Breadcrumb -->
+            <p class="text-sm text-gray-400 mb-1">
+                Dashboard / Question
+            </p>
+
+            <h1 class="text-3xl font-bold text-gray-800">
+                Question Management
+            </h1>
+
+            <p class="text-gray-500 text-sm">
+                Manage question bank
+            </p>
+
+        </div>
+
+        <a asp-action="Create"
+           class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 transition">
+            + New Question
+        </a>
+
+    </div>
+
+
+    <!-- TOOLBAR -->
+
+    <div class="bg-white shadow rounded-xl p-5 mb-6">
+
+        <div class="flex flex-wrap gap-3">
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search question..."
+                   class="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+
+            <select id="sectionFilter"
+                    class="border border-gray-200 rounded-lg px-4 py-2 text-sm">
+
+                <option value="">All Sections</option>
+
+                @foreach (var s in sections)
+                {
+                    <option value="@s">@s</option>
+                }
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+
+        <table class="w-full">
+
+            <!-- HEADER -->
+
+            <thead class="bg-gray-50 text-gray-600 text-sm">
+
+                <tr>
+
+                    <th class="text-left px-6 py-3">Question</th>
+
+                    <th class="text-left px-6 py-3">
+                        Section
+                    </th>
+
+                    <th class="text-left px-6 py-3">
+                        Score
+                    </th>
+
+                    <th class="text-right px-6 py-3">
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <!-- BODY -->
+
+            <tbody id="questionTable"
+                   class="divide-y text-sm">
+
+                @foreach (var q in Model)
+                {
+                    var isHigh = q.Score >= 5;
+
+                    <tr class="searchable hover:bg-gray-50 transition"
+                        data-section="@q.TestSection.SectionType">
+
+                        <!-- QUESTION -->
+
+                        <td class="px-6 py-4">
+
+                            <div class="font-medium text-gray-800">
+                                @q.Content
+                            </div>
+
+                            <div class="text-xs text-gray-400">
+                                ID: @q.QuestionId
+                            </div>
+
+                        </td>
+
+
+                        <!-- SECTION -->
+
+                        <td class="px-6 py-4">
+
+                            <span class="px-3 py-1 text-xs rounded-full
+                                    bg-blue-100 text-blue-700">
+
+                                @q.TestSection.SectionType
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- SCORE -->
+
+                        <td class="px-6 py-4">
+
+                            <span class="px-3 py-1 text-xs rounded-full
+                                    @(isHigh
+                                                                  ? "bg-green-100 text-green-700"
+                                                                  : "bg-gray-100 text-gray-600")">
+
+                            @q.Score
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ACTIONS -->
+
+                        <td class="px-6 py-4 text-right">
+
+                            <div class="flex justify-end gap-2">
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@q.QuestionId"
+                                   class="px-3 py-1 text-xs bg-yellow-400 text-white rounded hover:bg-yellow-500">
+
+                                    Edit
+
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@q.QuestionId"
+                                   class="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">
+
+                                    Delete
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- PAGINATION -->
+
+    <div class="flex justify-center mt-8 gap-2">
+
+        @if (pageNumber > 1)
         {
-            <tr>
-                <td>@q.Content</td>
-                <td>@q.TestSection.SectionType</td>
-                <td>@q.Score</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@q.QuestionId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@q.QuestionId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
+            <a asp-action="Index"
+               asp-route-page="@(pageNumber - 1)"
+               class="px-3 py-1 border rounded hover:bg-gray-100">
+
+                Prev
+
+            </a>
         }
-    </tbody>
-</table>
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a asp-action="Index"
+               asp-route-page="@i"
+               class="px-3 py-1 border rounded
+                        @(i == pageNumber
+                                   ? "bg-indigo-600 text-white"
+                                   : "hover:bg-gray-100")">
+
+            @i
+
+            </a>
+                }
+
+        @if (pageNumber < totalPages)
+        {
+            <a asp-action="Index"
+               asp-route-page="@(pageNumber + 1)"
+               class="px-3 py-1 border rounded hover:bg-gray-100">
+
+                Next
+
+            </a>
+        }
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    const searchInput = document.getElementById("searchInput");
+    const sectionFilter = document.getElementById("sectionFilter");
+    const rows = document.querySelectorAll(".searchable");
+
+    function filterRows(){
+
+        const search = searchInput.value.toLowerCase();
+        const section = sectionFilter.value;
+
+        rows.forEach(row => {
+
+            const text = row.innerText.toLowerCase();
+            const rowSection = row.dataset.section;
+
+            const matchSearch = text.includes(search);
+            const matchSection = !section || rowSection === section;
+
+            row.style.display = (matchSearch && matchSection)
+                ? ""
+                : "none";
+
+        });
+
+    }
+
+    searchInput.addEventListener("keyup", filterRows);
+    sectionFilter.addEventListener("change", filterRows);
+
+</script>

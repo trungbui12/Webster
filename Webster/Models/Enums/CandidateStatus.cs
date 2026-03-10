@@ -14,6 +14,7 @@
         CompletedTest = 6,
 
         Passed = 7,
-        Failed = 8
+        Failed = 8,
+        InProgress = 9
     }
 }

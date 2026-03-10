@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webster.Data;
 
@@ -11,9 +12,11 @@ using Webster.Data;
 namespace Webster.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260304012737_AddQuestionType")]
+    partial class AddQuestionType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,7 +106,7 @@ namespace Webster.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateAnswerId"));
 
-                    b.Property<int?>("AnswerId")
+                    b.Property<int>("AnswerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("AnsweredAt")
@@ -115,51 +118,16 @@ namespace Webster.Migrations
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("TextAnswer")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("CandidateAnswerId");
 
                     b.HasIndex("AnswerId");
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("CandidateId", "AnswerId")
-                        .IsUnique()
-                        .HasFilter("[AnswerId] IS NOT NULL");
+                    b.HasIndex("CandidateId", "QuestionId")
+                        .IsUnique();
 
                     b.ToTable("CandidateAnswers");
-                });
-
-            modelBuilder.Entity("Webster.Models.Entities.CandidateQuestion", b =>
-                {
-                    b.Property<int>("CandidateQuestionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateQuestionId"));
-
-                    b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CandidateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TestSectionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CandidateQuestionId");
-
-                    b.HasIndex("CandidateId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("TestSectionId");
-
-                    b.ToTable("CandidateQuestions");
                 });
 
             modelBuilder.Entity("Webster.Models.Entities.CandidateTestSection", b =>
@@ -412,7 +380,8 @@ namespace Webster.Migrations
                     b.HasOne("Webster.Models.Entities.Answer", "Answer")
                         .WithMany()
                         .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Webster.Models.Entities.Candidate", "Candidate")
                         .WithMany("CandidateAnswers")
@@ -431,33 +400,6 @@ namespace Webster.Migrations
                     b.Navigation("Candidate");
 
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("Webster.Models.Entities.CandidateQuestion", b =>
-                {
-                    b.HasOne("Webster.Models.Entities.Candidate", "Candidate")
-                        .WithMany()
-                        .HasForeignKey("CandidateId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Webster.Models.Entities.Question", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Webster.Models.Entities.TestSection", "TestSection")
-                        .WithMany()
-                        .HasForeignKey("TestSectionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Candidate");
-
-                    b.Navigation("Question");
-
-                    b.Navigation("TestSection");
                 });
 
             modelBuilder.Entity("Webster.Models.Entities.CandidateTestSection", b =>

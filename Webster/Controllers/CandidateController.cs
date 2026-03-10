@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using System.Security.Cryptography;
 using Webster.Data;
 using Webster.Models.Entities;
 using Webster.Models.Enums;
 using Webster.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using Webster.Helpers;
 
 namespace Webster.Controllers
 {
@@ -20,9 +20,22 @@ namespace Webster.Controllers
         }
 
         // LIST
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var candidates = _context.Candidates.ToList();
+            int pageSize = 5;
+
+            var totalCandidates = _context.Candidates.Count();
+            var totalPages = (int)Math.Ceiling((double)totalCandidates / pageSize);
+
+            var candidates = _context.Candidates
+                .OrderByDescending(c => c.CandidateId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.PageNumber = page;
+            ViewBag.TotalPages = totalPages;
+
             return View(candidates);
         }
 
@@ -52,8 +65,23 @@ namespace Webster.Controllers
                 Phone = model.Phone,
                 DateOfBirth = model.DateOfBirth,
                 Username = model.Username,
-                PasswordHash = HashPassword(model.Password),
-                Status = CandidateStatus.Created
+
+                // ✅ BCrypt
+                PasswordHash = PasswordHasher.Hash(model.Password),
+
+                Status = CandidateStatus.Created,
+
+                Education = new Education
+                {
+                    Degree = model.Degree,
+                    University = model.University,
+                    GraduationYear = model.GraduationYear
+                },
+                Experience = new Experience
+                {
+                    YearsOfExperience = model.YearsOfExperience,
+                    PreviousCompany = model.PreviousCompany
+                }
             };
 
             _context.Candidates.Add(candidate);
@@ -63,10 +91,13 @@ namespace Webster.Controllers
         }
 
         // EDIT - GET
-        // EDIT - GET
         public IActionResult Edit(int id)
         {
-            var candidate = _context.Candidates.Find(id);
+            var candidate = _context.Candidates
+                .Include(c => c.Education)
+                .Include(c => c.Experience)
+                .FirstOrDefault(c => c.CandidateId == id);
+
             if (candidate == null) return NotFound();
 
             var vm = new CandidateEditVM
@@ -76,12 +107,18 @@ namespace Webster.Controllers
                 Email = candidate.Email,
                 Phone = candidate.Phone,
                 DateOfBirth = candidate.DateOfBirth,
-                Status = candidate.Status
+                Status = candidate.Status,
+
+                Degree = candidate.Education?.Degree ?? "",
+                University = candidate.Education?.University ?? "",
+                GraduationYear = candidate.Education?.GraduationYear ?? DateTime.Now.Year,
+
+                YearsOfExperience = candidate.Experience?.YearsOfExperience ?? 0,
+                PreviousCompany = candidate.Experience?.PreviousCompany ?? ""
             };
 
-            return View(vm); // ✅ TRẢ VIEWMODEL
+            return View(vm);
         }
-
 
         // EDIT - POST
         [HttpPost]
@@ -90,20 +127,39 @@ namespace Webster.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            var candidate = _context.Candidates.Find(vm.CandidateId);
+            var candidate = _context.Candidates
+                .Include(c => c.Education)
+                .Include(c => c.Experience)
+                .FirstOrDefault(c => c.CandidateId == vm.CandidateId);
+
             if (candidate == null) return NotFound();
 
+            // BASIC
             candidate.FullName = vm.FullName;
             candidate.Email = vm.Email;
             candidate.Phone = vm.Phone;
             candidate.DateOfBirth = vm.DateOfBirth;
             candidate.Status = vm.Status;
 
+            // EDUCATION
+            if (candidate.Education == null)
+                candidate.Education = new Education();
+
+            candidate.Education.Degree = vm.Degree;
+            candidate.Education.University = vm.University;
+            candidate.Education.GraduationYear = vm.GraduationYear;
+
+            // EXPERIENCE
+            if (candidate.Experience == null)
+                candidate.Experience = new Experience();
+
+            candidate.Experience.YearsOfExperience = vm.YearsOfExperience;
+            candidate.Experience.PreviousCompany = vm.PreviousCompany;
+
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
-
 
         // DELETE - GET
         public IActionResult Delete(int id)
@@ -125,19 +181,6 @@ namespace Webster.Controllers
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
-        }
-
-        // =====================
-        private string HashPassword(string password)
-        {
-            byte[] salt = RandomNumberGenerator.GetBytes(16);
-
-            return Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 10000,
-                numBytesRequested: 32));
         }
     }
 }

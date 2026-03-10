@@ -1,28 +1,84 @@
 ﻿@model Webster.Models.ViewModels.TestSectionCreateVM
+
 @{
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+    ViewData["Title"] = "Create Test Section";
 }
 
-<h2>Create Test Section</h2>
+<div class="max-w-3xl mx-auto">
 
-<form asp-action="Create" method="post">
-    <div class="mb-2">
-        <label>Section Type</label>
-        <select asp-for="SectionType"
-                asp-items="Html.GetEnumSelectList<Webster.Models.Enums.TestSectionType>()"
-                class="form-select"></select>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">
+            Create Test Section
+        </h2>
+
+        <a asp-action="Index"
+           class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+            Back
+        </a>
     </div>
 
-    <div class="mb-2">
-        <label>Duration (minutes)</label>
-        <input asp-for="DurationInMinutes" class="form-control" />
+
+    <!-- Card -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+
+        <form asp-action="Create" method="post" class="space-y-6">
+
+            <!-- Section Type -->
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                    Section Type
+                </label>
+
+                <select asp-for="SectionType"
+                        asp-items="Html.GetEnumSelectList<Webster.Models.Enums.TestSectionType>()"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                </select>
+            </div>
+
+
+            <!-- Duration -->
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                    Duration (minutes)
+                </label>
+
+                <input asp-for="DurationInMinutes"
+                       placeholder="Enter duration..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+
+            <!-- Total Questions -->
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">
+                    Total Questions
+                </label>
+
+                <input asp-for="TotalQuestions"
+                       placeholder="Enter number of questions..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="flex gap-3 pt-2">
+
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                    Create Section
+                </button>
+
+                <a asp-action="Index"
+                   class="bg-gray-300 px-6 py-2 rounded-lg hover:bg-gray-400 transition">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
     </div>
 
-    <div class="mb-3">
-        <label>Total Questions</label>
-        <input asp-for="TotalQuestions" class="form-control" />
-    </div>
-
-    <button class="btn btn-success">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
+</div>

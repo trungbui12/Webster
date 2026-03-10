@@ -1,16 +1,191 @@
-﻿<!DOCTYPE html>
+﻿@model Webster.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Webster</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet" />
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+
+        .glass {
+            backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+    </style>
+
 </head>
-<body class="bg-light">
-    @RenderBody()
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 overflow-hidden">
+
+    <!-- Background glow -->
+
+    <div class="absolute w-[600px] h-[600px] bg-purple-400 opacity-30 blur-3xl rounded-full top-[-150px] left-[-150px]"></div>
+    <div class="absolute w-[600px] h-[600px] bg-blue-400 opacity-30 blur-3xl rounded-full bottom-[-150px] right-[-150px]"></div>
+
+    <div class="relative w-full max-w-xl px-6">
+
+        <div class="glass shadow-2xl rounded-3xl p-12">
+
+            <!-- LOGO -->
+
+            <div class="text-center mb-10">
+
+                <div class="text-4xl font-bold text-gray-800 flex justify-center items-center gap-3">
+
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+
+                    Webster
+
+                </div>
+
+                <p class="text-gray-500 mt-2">
+                    Aptitude Testing Platform
+                </p>
+
+            </div>
+
+            <form asp-action="Login" method="post" class="space-y-6" id="loginForm">
+
+                <!-- USERNAME -->
+
+                <div>
+
+                    <label class="text-sm text-gray-600 font-medium">
+                        Username
+                    </label>
+
+                    <div class="relative mt-2">
+
+                        <i class="fa fa-user absolute left-4 top-4 text-gray-400"></i>
+
+                        <input asp-for="Username"
+                               class="w-full pl-12 pr-4 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                               placeholder="Enter username" />
+
+                    </div>
+
+                    <span asp-validation-for="Username"
+                          class="text-red-500 text-sm"></span>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div>
+
+                    <label class="text-sm text-gray-600 font-medium">
+                        Password
+                    </label>
+
+                    <div class="relative mt-2">
+
+                        <i class="fa fa-lock absolute left-4 top-4 text-gray-400"></i>
+
+                        <input asp-for="Password"
+                               type="password"
+                               id="passwordInput"
+                               class="w-full pl-12 pr-12 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                               placeholder="Enter password" />
+
+                        <button type="button"
+                                onclick="togglePassword()"
+                                class="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+
+                            <i id="eyeIcon" class="fa fa-eye"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="bg-red-100 text-red-600 p-3 rounded-lg text-sm text-center">
+                        Invalid username or password
+                    </div>
+                }
+
+                <!-- LOGIN BUTTON -->
+
+                <button id="loginBtn"
+                        class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+
+                    <span id="btnText">Login</span>
+
+                    <span id="loadingSpinner" class="hidden">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </span>
+
+                </button>
+
+            </form>
+
+            <!-- FOOTER -->
+
+            <div class="text-center text-gray-500 text-sm mt-8">
+
+                <p>Webster Recruitment System</p>
+
+                <p class="text-xs mt-1 opacity-70">
+                    © 2026 Webster Corporation
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function togglePassword(){
+
+        const input=document.getElementById("passwordInput")
+        const icon=document.getElementById("eyeIcon")
+
+        if(input.type==="password"){
+        input.type="text"
+        icon.classList.remove("fa-eye")
+        icon.classList.add("fa-eye-slash")
+        }
+        else{
+        input.type="password"
+        icon.classList.remove("fa-eye-slash")
+        icon.classList.add("fa-eye")
+        }
+
+        }
+
+        // loading animation
+
+        document.getElementById("loginForm").addEventListener("submit",function(){
+
+        document.getElementById("btnText").innerText="Signing in..."
+
+        document.getElementById("loadingSpinner").classList.remove("hidden")
+
+        })
+
+    </script>
+
 </body>
+
 </html>

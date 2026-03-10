@@ -24,7 +24,7 @@ namespace Webster.Data
         public DbSet<TestResult> TestResults => Set<TestResult>();
         public DbSet<PassedCandidate> PassedCandidates => Set<PassedCandidate>();
         public DbSet<CandidateTestSection> CandidateTestSections => Set<CandidateTestSection>();
-
+        public DbSet<CandidateQuestion> CandidateQuestions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -133,6 +133,28 @@ namespace Webster.Data
                 .WithMany()
                 .HasForeignKey(pc => pc.CandidateId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CandidateQuestion>()
+    .HasIndex(x => new { x.CandidateId, x.TestSectionId, x.QuestionId })
+    .IsUnique();
+
+            modelBuilder.Entity<CandidateQuestion>()
+      .HasOne(cq => cq.Candidate)
+      .WithMany()
+      .HasForeignKey(cq => cq.CandidateId)
+      .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CandidateQuestion>()
+                .HasOne(cq => cq.TestSection)
+                .WithMany()
+                .HasForeignKey(cq => cq.TestSectionId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CandidateQuestion>()
+                .HasOne(cq => cq.Question)
+                .WithMany()
+                .HasForeignKey(cq => cq.QuestionId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

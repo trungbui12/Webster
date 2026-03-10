@@ -1,0 +1,201 @@
+﻿@model Webster.Models.Entities.Candidate
+
+@{
+    ViewData["Title"] = "Candidate Profile";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<style>
+    body {
+        background: #f9fafb;
+        font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .wrapper {
+        max-width: 1100px;
+        margin: auto;
+        padding: 40px 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .card-box {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 18px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px 40px;
+    }
+
+    .label {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+
+    .value {
+        font-size: 14px;
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .badge-score {
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #111827;
+        color: white;
+        font-size: 13px;
+        display: inline-block;
+    }
+
+    .btn-back {
+        padding: 7px 16px;
+        border-radius: 8px;
+        border: 1px solid #111827;
+        background: white;
+        color: #111827;
+        text-decoration: none;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #111827;
+            color: white;
+        }
+
+    .empty {
+        font-size: 13px;
+        color: #9ca3af;
+    }
+
+    @@media (max-width: 768px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="wrapper">
+
+    <div class="header">
+        <div class="title">Candidate Profile</div>
+        <a asp-action="PassedCandidates" class="btn-back">Back</a>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="card-box">
+        <div class="section-title">Personal Information</div>
+
+        <div class="grid">
+            <div>
+                <div class="label">Full Name</div>
+                <div class="value">@Model?.FullName</div>
+            </div>
+
+            <div>
+                <div class="label">Email</div>
+                <div class="value">@Model?.Email</div>
+            </div>
+
+            <div>
+                <div class="label">Phone</div>
+                <div class="value">@Model?.Phone</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="card-box">
+        <div class="section-title">Education</div>
+
+        @if (Model?.Education != null)
+        {
+            <div class="grid">
+                <div>
+                    <div class="label">Degree</div>
+                    <div class="value">@Model.Education.Degree</div>
+                </div>
+
+                <div>
+                    <div class="label">University</div>
+                    <div class="value">@Model.Education.University</div>
+                </div>
+
+                <div>
+                    <div class="label">Graduation Year</div>
+                    <div class="value">@Model.Education.GraduationYear</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty">No education information available.</div>
+        }
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="card-box">
+        <div class="section-title">Experience</div>
+
+        @if (Model?.Experience != null)
+        {
+            <div class="grid">
+                <div>
+                    <div class="label">Years of Experience</div>
+                    <div class="value">@Model.Experience.YearsOfExperience</div>
+                </div>
+
+                <div>
+                    <div class="label">Previous Company</div>
+                    <div class="value">@Model.Experience.PreviousCompany</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty">No experience information available.</div>
+        }
+    </div>
+
+    <!-- TEST RESULT -->
+    <div class="card-box">
+        <div class="section-title">Test Result</div>
+
+        @if (Model?.TestResult != null)
+        {
+            <span class="badge-score">
+                Total Score: @Model.TestResult.TotalScore
+            </span>
+        }
+        else
+        {
+            <div class="empty">No test result available.</div>
+        }
+    </div>
+
+</div>

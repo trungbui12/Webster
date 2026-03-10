@@ -1,27 +1,218 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+}
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - Webster Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
           rel="stylesheet" />
+
+    <style>
+
+        body {
+            font-family: Inter, system-ui;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .sidebar-hover:hover {
+            background: #1e293b;
+        }
+
+        .sidebar-active {
+            background: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+    </style>
+
 </head>
-<body>
 
-    <nav class="navbar navbar-dark bg-dark px-4">
-        <a class="navbar-brand" href="/Manager/Dashboard">
-            Webster Manager
-        </a>
-        <span class="navbar-text text-white">
-            Welcome, Manager
-        </span>
-    </nav>
+<body class="bg-slate-100">
 
-    <div class="container-fluid">
-        @RenderBody()
+    <!-- NAVBAR -->
+
+    <header class="bg-slate-900 text-white shadow">
+
+        <div class="flex items-center justify-between px-6 h-16">
+
+            <a class="flex items-center gap-2 text-lg font-semibold"
+               href="/Manager/Dashboard">
+
+                <i class="bi bi-speedometer2 text-xl"></i>
+                Webster Manager
+
+            </a>
+
+            <div class="flex items-center gap-4">
+
+                <span class="text-sm text-slate-300">
+                    Welcome, Manager
+                </span>
+
+                <div class="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center text-sm font-semibold">
+                    M
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <div class="flex min-h-screen">
+
+        <!-- SIDEBAR -->
+
+        <aside class="w-64 bg-slate-900 text-slate-300">
+
+            <div class="px-6 py-4 text-xs uppercase tracking-widest text-slate-500">
+                Main
+            </div>
+
+            <nav class="px-3 space-y-1">
+
+                <a asp-controller="Manager"
+                   asp-action="Dashboard"
+                   class="sidebar-item
+   @(currentController == "Manager" && currentAction == "Dashboard" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-speedometer2"></i>
+                    Dashboard
+
+                </a>
+
+            </nav>
+
+
+            <div class="px-6 pt-6 pb-2 text-xs uppercase tracking-widest text-slate-500">
+                Management
+            </div>
+
+            <nav class="px-3 space-y-1">
+
+                <a asp-controller="Candidate"
+                   asp-action="Index"
+                   class="sidebar-item
+   @(currentController == "Candidate" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-people"></i>
+                    Candidates
+
+                </a>
+
+                <a asp-controller="TestSection"
+                   asp-action="Index"
+                   class="sidebar-item
+   @(currentController == "TestSection" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-diagram-3"></i>
+                    Test Sections
+
+                </a>
+
+                <a asp-controller="Question"
+                   asp-action="Index"
+                   class="sidebar-item
+   @(currentController == "Question" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-journal-text"></i>
+                    Question Bank
+
+                </a>
+
+                <a asp-controller="ManagerCandidate"
+                   asp-action="Index"
+                   class="sidebar-item
+   @(currentController == "ManagerCandidate" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-clipboard-data"></i>
+                    Results
+
+                </a>
+
+            </nav>
+
+
+            <div class="px-6 pt-6 pb-2 text-xs uppercase tracking-widest text-slate-500">
+                Reports
+            </div>
+
+            <nav class="px-3 space-y-1">
+
+                <a asp-controller="ManagerReport"
+                   asp-action="Index"
+                   class="sidebar-item
+   @(currentController == "ManagerReport" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-bar-chart-line"></i>
+                    Report Dashboard
+
+                </a>
+
+                <a asp-controller="Manager"
+                   asp-action="PassedCandidates"
+                   class="sidebar-item
+   @(currentController == "Manager" && currentAction == "PassedCandidates" ? "sidebar-active" : "sidebar-hover")">
+
+                    <i class="bi bi-check-circle"></i>
+                    Passed Candidates
+
+                </a>
+
+            </nav>
+
+
+            <div class="border-t border-slate-800 mt-6"></div>
+
+            <nav class="px-3 py-4">
+
+                <a asp-controller="Account"
+                   asp-action="Logout"
+                   class="sidebar-item hover:bg-red-600 hover:text-white">
+
+                    <i class="bi bi-box-arrow-right"></i>
+                    Logout
+
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- CONTENT -->
+
+        <main class="flex-1 p-8">
+
+            <div class="bg-white rounded-2xl shadow p-8 min-h-[80vh]">
+
+                @RenderBody()
+
+            </div>
+
+        </main>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

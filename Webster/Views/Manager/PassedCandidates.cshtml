@@ -1,0 +1,263 @@
+﻿@model List<Webster.Models.Entities.PassedCandidate>
+
+@{
+    ViewData["Title"] = "Passed Candidates";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+    <!-- HEADER -->
+
+    <div class="mb-8">
+
+        <!-- Web Map -->
+        <p class="text-sm text-gray-400 mb-2">
+            <a asp-controller="Manager" asp-action="Dashboard"
+               class="hover:text-indigo-600">Dashboard</a>
+            /
+            <span class="text-gray-500">Passed Candidates</span>
+        </p>
+
+        <div class="flex justify-between items-center">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-green-100 text-green-600">
+                    <i class="bi bi-award text-lg"></i>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-900">
+                        Passed Candidates
+                    </h2>
+                    <p class="text-sm text-gray-500">
+                        Candidates who successfully passed the test
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-semibold">
+                @Model.Count Passed
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+
+        <div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+
+            <div>
+                <p class="text-sm text-gray-500">Total Passed</p>
+                <p class="text-2xl font-bold text-gray-800">
+                    @Model.Count
+                </p>
+            </div>
+
+            <div class="w-10 h-10 bg-green-100 text-green-600 flex items-center justify-center rounded-lg">
+                <i class="bi bi-check-circle"></i>
+            </div>
+
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+
+            <div>
+                <p class="text-sm text-gray-500">Average Score</p>
+                <p class="text-2xl font-bold text-gray-800">
+                    @(Model.Any() ? Model.Average(x => x.Candidate.TestResult.TotalScore) : 0)
+                </p>
+            </div>
+
+            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 flex items-center justify-center rounded-lg">
+                <i class="bi bi-bar-chart"></i>
+            </div>
+
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+
+            <div>
+                <p class="text-sm text-gray-500">Highest Score</p>
+                <p class="text-2xl font-bold text-gray-800">
+                    @(Model.Any() ? Model.Max(x => x.Candidate.TestResult.TotalScore) : 0)
+                </p>
+            </div>
+
+            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 flex items-center justify-center rounded-lg">
+                <i class="bi bi-trophy"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SEARCH -->
+
+    <div class="mb-6 relative max-w-sm">
+
+        <input type="text"
+               placeholder="Search candidate..."
+               id="searchInput"
+               class="w-full border rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-indigo-500">
+
+        <i class="bi bi-search absolute left-3 top-2.5 text-gray-400"></i>
+
+    </div>
+
+
+
+    <!-- TABLE -->
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+
+        <table class="w-full">
+
+            <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+
+                <tr>
+
+                    <th class="px-6 py-4 text-left">Candidate</th>
+                    <th class="px-6 py-4 text-left">Phone</th>
+                    <th class="px-6 py-4 text-left">Score</th>
+                    <th class="px-6 py-4 text-left">Passed Date</th>
+                    <th class="px-6 py-4 text-right">Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="candidateTable" class="divide-y text-sm">
+
+                @foreach (var item in Model)
+                {
+
+                    var score = item.Candidate.TestResult?.TotalScore ?? 0;
+
+                    string scoreColor =
+                    score >= 8 ? "bg-green-100 text-green-700" :
+                    score >= 5 ? "bg-yellow-100 text-yellow-700" :
+                    "bg-red-100 text-red-700";
+
+                    <tr class="hover:bg-gray-50 transition searchable">
+
+                        <!-- Candidate -->
+
+                        <td class="px-6 py-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full
+                                                bg-gradient-to-r from-indigo-500 to-purple-500
+                                                text-white font-semibold text-sm">
+
+                                    @item.Candidate.FullName.Substring(0, 1).ToUpper()
+
+                                </div>
+
+                                <div>
+
+                                    <p class="font-semibold text-gray-900">
+                                        @item.Candidate.FullName
+                                    </p>
+
+                                    <p class="text-xs text-gray-500">
+                                        @item.Candidate.Email
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- Phone -->
+
+                        <td class="px-6 py-5 text-gray-600">
+                            @item.Candidate.Phone
+                        </td>
+
+
+                        <!-- Score -->
+
+                        <td class="px-6 py-5">
+
+                            <span class="text-xs font-semibold px-3 py-1 rounded-full @scoreColor">
+
+                                @score
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- Date -->
+
+                        <td class="px-6 py-5 text-gray-500">
+                            @item.PassedDate.ToString("dd MMM yyyy")
+                        </td>
+
+
+                        <!-- Action -->
+
+                        <td class="px-6 py-5 text-right">
+
+                            <a asp-controller="Manager"
+                               asp-action="ViewProfile"
+                               asp-route-id="@item.Candidate.CandidateId"
+                               class="px-4 py-2 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+
+                                View Profile
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    const searchInput = document.getElementById("searchInput");
+    const rows = document.querySelectorAll(".searchable");
+
+    searchInput.addEventListener("keyup", function(){
+
+        const value = this.value.toLowerCase();
+
+        rows.forEach(row => {
+
+            const text = row.innerText.toLowerCase();
+
+            row.style.display = text.includes(value)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+</script>

@@ -13,5 +13,8 @@ namespace Webster.Models.ViewModels
 
         public int? TotalScore { get; set; }
         public bool? IsPassed { get; set; }
+        public int QuestionCount { get; set; }
+
+        public int TimeLimit { get; set; } // minutes
     }
 }

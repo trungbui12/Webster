@@ -2,71 +2,235 @@
 @using Webster.Models.Enums
 
 @{
+    ViewData["Title"] = "Edit Question";
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
 }
 
-<h2>Edit Question</h2>
+<div class="max-w-4xl mx-auto py-10 px-4">
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="QuestionId" />
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
 
-    <!-- TEST SECTION -->
-    <div class="mb-3">
-        <label class="form-label">Test Section</label>
-        <select asp-for="TestSectionId" class="form-select">
-            @foreach (var s in ViewBag.TestSections)
-            {
-                <option value="@s.TestSectionId">@s.SectionType</option>
-            }
-        </select>
-    </div>
+        <!-- TITLE -->
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+            ✏️ Edit Question
+        </h2>
 
-    <!-- CONTENT -->
-    <div class="mb-3">
-        <label class="form-label">Question Content</label>
-        <textarea asp-for="Content" class="form-control" rows="3"></textarea>
-        <span asp-validation-for="Content" class="text-danger"></span>
-    </div>
+        <form asp-action="Edit" method="post">
 
-    <!-- SCORE -->
-    <div class="mb-3">
-        <label class="form-label">Score</label>
-        <input asp-for="Score" type="number" class="form-control" min="1" max="5" />
-    </div>
+            <input type="hidden" asp-for="QuestionId" />
 
-    <!-- DIFFICULTY -->
-    <div class="mb-3">
-        <label class="form-label">Difficulty</label>
-        <select asp-for="Difficulty"
-                asp-items="Html.GetEnumSelectList<QuestionDifficulty>()"
-                class="form-select">
-        </select>
-    </div>
+            <!-- QUESTION CONTENT -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Question Content
+                </label>
 
-    <hr />
-    <h4>Answers (Choose ONE correct)</h4>
+                <textarea asp-for="Content"
+                          rows="3"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
 
-    @for (int i = 0; i < Model.Answers.Count; i++)
-    {
-        <div class="mb-2 border p-2 rounded">
-            <input type="hidden" asp-for="Answers[@i].AnswerId" />
+                <span asp-validation-for="Content" class="text-red-500 text-sm"></span>
+            </div>
 
-            <div class="input-group">
-                <div class="input-group-text">
-                    <input type="radio"
-                           name="CorrectAnswerId"
-                           value="@Model.Answers[i].AnswerId"
-                           checked="@(Model.CorrectAnswerId == Model.Answers[i].AnswerId)" />
+
+            <!-- GRID -->
+            <div class="grid md:grid-cols-4 gap-4 mb-6">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Score
+                    </label>
+
+                    <input asp-for="Score"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
                 </div>
 
-                <input asp-for="Answers[@i].Content"
-                       class="form-control"
-                       placeholder="Answer @(i + 1)" />
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Difficulty
+                    </label>
+
+                    <select asp-for="Difficulty"
+                            asp-items="Html.GetEnumSelectList<QuestionDifficulty>()"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Question Type
+                    </label>
+
+                    <select asp-for="QuestionType"
+                            asp-items="Html.GetEnumSelectList<QuestionType>()"
+                            id="questionType"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Test Section
+                    </label>
+
+                    <select asp-for="TestSectionId"
+                            asp-items="@(new SelectList(ViewBag.TestSections, "TestSectionId", "SectionType"))"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+
             </div>
-        </div>
-    }
 
 
-    <button type="submit" class="btn btn-success mt-3">Save</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">Back</a>
-</form>
+            <!-- ANSWERS -->
+            <div id="choiceArea">
+
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    Answers
+                </h3>
+
+                @for (int i = 0; i < Model.Answers.Count; i++)
+                {
+                    <div class="answer-row border border-gray-200 rounded-lg p-4 mb-3 bg-gray-50">
+
+                        <div class="flex items-center gap-3">
+
+                            <input type="hidden" asp-for="Answers[@i].AnswerId" />
+
+                            <!-- RADIO -->
+                            <div class="singleChoice">
+                                <input type="radio"
+                                       name="CorrectAnswerId"
+                                       value="@Model.Answers[i].AnswerId"
+                                       class="h-4 w-4 text-indigo-600"
+                                       @(Model.CorrectAnswerId == Model.Answers[i].AnswerId ? "checked" : "") />
+                            </div>
+
+                            <!-- CHECKBOX -->
+                            <div class="multipleChoice hidden">
+                                <input type="checkbox"
+                                       name="CorrectAnswerIds"
+                                       value="@Model.Answers[i].AnswerId"
+                                       class="h-4 w-4 text-indigo-600"
+                                       @(Model.CorrectAnswerIds != null && Model.CorrectAnswerIds.Contains(Model.Answers[i].AnswerId) ? "checked" : "") />
+                            </div>
+
+                            <input asp-for="Answers[@i].Content"
+                                   class="answer-input flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500"
+                                   placeholder="Answer @(i + 1)" />
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- TEXT ANSWER -->
+            <div id="textArea" class="hidden mt-4">
+
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Correct Text Answer
+                </label>
+
+                <input asp-for="CorrectTextAnswer"
+                       placeholder="Enter correct answer..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+            </div>
+
+
+            <!-- BUTTONS -->
+            <div class="mt-8 flex gap-3">
+
+                <button type="submit"
+                        class="bg-amber-500 text-white px-5 py-2 rounded-lg hover:bg-amber-600 transition">
+                    Update Question
+                </button>
+
+                <a asp-action="Index"
+                   class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-300 transition">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        const typeSelect = document.getElementById("questionType");
+        const choiceArea = document.getElementById("choiceArea");
+        const textArea = document.getElementById("textArea");
+
+        const single = document.querySelectorAll(".singleChoice");
+        const multiple = document.querySelectorAll(".multipleChoice");
+        const answerRows = document.querySelectorAll(".answer-row");
+        const answerInputs = document.querySelectorAll(".answer-input");
+
+        function toggleUI() {
+
+            const value = parseInt(typeSelect.value);
+
+            if (value === 1) {
+
+                choiceArea.classList.remove("hidden");
+                textArea.classList.add("hidden");
+
+                single.forEach(x => x.classList.remove("hidden"));
+                multiple.forEach(x => x.classList.add("hidden"));
+
+                answerRows.forEach(row => row.classList.remove("hidden"));
+            }
+
+            else if (value === 2) {
+
+                choiceArea.classList.remove("hidden");
+                textArea.classList.add("hidden");
+
+                single.forEach(x => x.classList.add("hidden"));
+                multiple.forEach(x => x.classList.remove("hidden"));
+
+                answerRows.forEach(row => row.classList.remove("hidden"));
+            }
+
+            else if (value === 3) {
+
+                choiceArea.classList.remove("hidden");
+                textArea.classList.add("hidden");
+
+                single.forEach(x => x.classList.remove("hidden"));
+                multiple.forEach(x => x.classList.add("hidden"));
+
+                answerRows.forEach((row, index) => {
+
+                    if (index < 2)
+                        row.classList.remove("hidden");
+                    else
+                        row.classList.add("hidden");
+
+                });
+
+                if (!answerInputs[0].value) answerInputs[0].value = "True";
+                if (!answerInputs[1].value) answerInputs[1].value = "False";
+            }
+
+            else if (value === 4) {
+
+                choiceArea.classList.add("hidden");
+                textArea.classList.remove("hidden");
+            }
+
+        }
+
+        typeSelect.addEventListener("change", toggleUI);
+        toggleUI();
+
+    </script>
+
+}

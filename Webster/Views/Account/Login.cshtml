@@ -1,61 +1,225 @@
 ﻿@model Webster.Models.ViewModels.LoginViewModel
-
 @{
     ViewData["Title"] = "Login";
-    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    Layout = null;
 }
 
-<div class="container d-flex justify-content-center align-items-center"
-     style="min-height: 100vh;">
-    <div class="card shadow" style="width: 400px;">
-        <div class="card-body">
-            <h3 class="text-center mb-4">Webster Aptitude Test</h3>
+<!DOCTYPE html>
+<html>
 
-            <form asp-action="Login" method="post">
-                <!-- Username -->
-                <div class="mb-3">
-                    <label asp-for="Username" class="form-label"></label>
-                    <input asp-for="Username" class="form-control" />
-                    <span asp-validation-for="Username" class="text-danger"></span>
+<head>
+
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+
+        .glass {
+            backdrop-filter: blur(22px);
+            background: rgba(255,255,255,0.88);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+            .input-group input {
+                padding-top: 20px;
+            }
+
+            .input-group label {
+                position: absolute;
+                left: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #6b7280;
+                font-size: 14px;
+                pointer-events: none;
+                transition: all .2s;
+                background: white;
+                padding: 0 4px;
+            }
+
+            .input-group input:focus + label,
+            .input-group input:not(:placeholder-shown) + label {
+                top: 4px;
+                font-size: 12px;
+                color: #6366f1;
+            }
+
+    </style>
+
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 overflow-hidden">
+
+    <!-- background glow -->
+
+    <div class="absolute w-[600px] h-[600px] bg-purple-400 opacity-30 blur-3xl rounded-full top-[-150px] left-[-150px]"></div>
+    <div class="absolute w-[600px] h-[600px] bg-blue-400 opacity-30 blur-3xl rounded-full bottom-[-150px] right-[-150px]"></div>
+
+    <div class="relative w-full max-w-xl px-6">
+
+        <div class="glass shadow-2xl rounded-3xl p-12">
+
+            <!-- LOGO -->
+
+            <div class="text-center mb-10">
+
+                <div class="flex justify-center mb-3">
+
+                    <div class="w-14 h-14 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg text-xl">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+
                 </div>
 
-                <!-- Password -->
-                <div class="mb-3">
-                    <label asp-for="Password" class="form-label"></label>
-                    <input asp-for="Password" class="form-control" type="password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Webster
+                </h2>
+
+                <p class="text-gray-500 mt-1">
+                    Aptitude Testing Platform
+                </p>
+
+            </div>
+
+
+            <form asp-action="Login" method="post" id="loginForm" class="space-y-6">
+
+                <!-- USERNAME -->
+
+                <div class="input-group">
+
+                    <input asp-for="Username"
+                           placeholder=" "
+                           class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+
+                    <label>Username</label>
+
+                    <span asp-validation-for="Username"
+                          class="text-red-500 text-sm"></span>
+
                 </div>
 
-                <!-- Role -->
-                <div class="mb-3">
-                    <label asp-for="Role" class="form-label">Login as</label>
-                    <select asp-for="Role" class="form-select">
-                        <option value="">-- Select Role --</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Candidate">Candidate</option>
-                    </select>
-                    <span asp-validation-for="Role" class="text-danger"></span>
+
+                <!-- PASSWORD -->
+
+                <div class="relative input-group">
+
+                    <input asp-for="Password"
+                           type="password"
+                           id="passwordInput"
+                           placeholder=" "
+                           class="w-full border rounded-xl px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+
+                    <label>Password</label>
+
+                    <button type="button"
+                            onclick="togglePassword()"
+                            class="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+
+                        <i id="eyeIcon" class="fa fa-eye"></i>
+
+                    </button>
+
                 </div>
 
-                <!-- Error -->
+
+                <!-- OPTIONS -->
+
+                <div class="flex items-center justify-between text-sm">
+
+                    <label class="flex items-center gap-2 text-gray-600">
+
+                        <input type="checkbox"
+                               class="rounded border-gray-300">
+
+                        Remember me
+
+                    </label>
+
+                    <a href="#"
+                       class="text-indigo-600 hover:underline">
+
+                        Forgot password?
+
+                    </a>
+
+                </div>
+
+
                 @if (!ViewData.ModelState.IsValid)
                 {
-                    <div class="alert alert-danger">
-                        Invalid username or password.
+                    <div class="bg-red-100 text-red-600 p-3 rounded-lg text-sm text-center">
+                        Invalid username or password
                     </div>
                 }
 
-                <!-- Submit -->
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        Login
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+                <!-- LOGIN BUTTON -->
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+                <button id="loginBtn"
+                        class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+
+                    <span id="btnText">Login</span>
+
+                    <span id="loadingSpinner" class="hidden">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </span>
+
+                </button>
+
+            </form>
+
+
+            <div class="text-center text-gray-500 text-sm mt-8">
+
+                <p>Webster Recruitment System</p>
+
+                <p class="text-xs opacity-70 mt-1">
+                    © 2026 Webster Corporation
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function togglePassword(){
+
+        const input=document.getElementById("passwordInput")
+        const icon=document.getElementById("eyeIcon")
+
+        if(input.type==="password"){
+        input.type="text"
+        icon.classList.replace("fa-eye","fa-eye-slash")
+        }
+        else{
+        input.type="password"
+        icon.classList.replace("fa-eye-slash","fa-eye")
+        }
+
+        }
+
+        document.getElementById("loginForm").addEventListener("submit",function(){
+
+        document.getElementById("btnText").innerText="Signing in..."
+
+        document.getElementById("loadingSpinner").classList.remove("hidden")
+
+        })
+
+    </script>
+
+</body>
+
+</html>

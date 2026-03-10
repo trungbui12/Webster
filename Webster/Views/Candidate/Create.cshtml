@@ -3,40 +3,163 @@
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
 }
 
+<div class="max-w-5xl mx-auto px-6">
 
-<h2>Create Candidate</h2>
-
-<form asp-action="Create" method="post">
-    <div class="mb-2">
-        <label>Full Name</label>
-        <input asp-for="FullName" class="form-control" />
+    <!-- HEADER -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900">
+            Create Candidate
+        </h2>
+        <p class="text-sm text-gray-500">
+            Add a new candidate to the system
+        </p>
     </div>
 
-    <div class="mb-2">
-        <label>Email</label>
-        <input asp-for="Email" class="form-control" />
-    </div>
+    <form asp-action="Create" method="post" class="space-y-8">
 
-    <div class="mb-2">
-        <label>Phone</label>
-        <input asp-for="Phone" class="form-control" />
-    </div>
+        <!-- BASIC INFO -->
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
 
-    <div class="mb-2">
-        <label>Date Of Birth</label>
-        <input asp-for="DateOfBirth" type="date" class="form-control" />
-    </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-5">
+                Basic Information
+            </h3>
 
-    <div class="mb-2">
-        <label>Username</label>
-        <input asp-for="Username" class="form-control" />
-    </div>
+            <div class="grid md:grid-cols-2 gap-5">
 
-    <div class="mb-3">
-        <label>Password</label>
-        <input asp-for="Password" type="password" class="form-control" />
-    </div>
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Full Name</label>
+                    <input asp-for="FullName"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
 
-    <button class="btn btn-success">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Email</label>
+                    <input asp-for="Email"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Phone</label>
+                    <input asp-for="Phone"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Date of Birth</label>
+                    <input asp-for="DateOfBirth"
+                           type="date"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACCOUNT -->
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
+
+            <h3 class="text-lg font-semibold text-gray-800 mb-5">
+                Account
+            </h3>
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Username</label>
+                    <input asp-for="Username"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Password</label>
+                    <input asp-for="Password"
+                           type="password"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- EDUCATION -->
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
+
+            <h3 class="text-lg font-semibold text-gray-800 mb-5">
+                Education
+            </h3>
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Degree</label>
+                    <input asp-for="Degree"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">University</label>
+                    <input asp-for="University"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">Graduation Year</label>
+                    <input asp-for="GraduationYear"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- EXPERIENCE -->
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
+
+            <h3 class="text-lg font-semibold text-gray-800 mb-5">
+                Experience
+            </h3>
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">
+                        Years of Experience
+                    </label>
+                    <input asp-for="YearsOfExperience"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="text-sm text-gray-600 font-medium">
+                        Previous Company
+                    </label>
+                    <input asp-for="PreviousCompany"
+                           class="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <div class="flex gap-4 pt-4">
+
+            <button type="submit"
+                    class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
+                Create Candidate
+            </button>
+
+            <a asp-action="Index"
+               class="bg-gray-200 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 transition">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
