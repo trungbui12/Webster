@@ -3,45 +3,45 @@
 @{
     ViewData["Title"] = "Passed Candidates";
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+
+    var totalItems = ViewBag.TotalItems ?? 0;
+
+    var avgScore = Model != null && Model.Any()
+        ? Math.Round(Model.Average(x => x.Candidate?.TestResult?.TotalScore ?? 0), 2)
+        : 0;
+
+    var highestScore = Model != null && Model.Any()
+        ? Model.Max(x => x.Candidate?.TestResult?.TotalScore ?? 0)
+        : 0;
+
+    int maxScore = 20;
+
+    var avgPercent = Math.Min((double)avgScore / maxScore * 100, 100);
+    var highestPercent = Math.Min((double)highestScore / maxScore * 100, 100);
+
+    string search = ViewBag.Search ?? "";
 }
 
 <div class="max-w-7xl mx-auto px-6 py-8">
 
     <!-- HEADER -->
 
-    <div class="mb-8">
+    <div class="flex justify-between items-center mb-8">
 
-        <!-- Web Map -->
-        <p class="text-sm text-gray-400 mb-2">
-            <a asp-controller="Manager" asp-action="Dashboard"
-               class="hover:text-indigo-600">Dashboard</a>
-            /
-            <span class="text-gray-500">Passed Candidates</span>
-        </p>
+        <div>
 
-        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold text-gray-900">
+                Passed Candidates
+            </h2>
 
-            <div class="flex items-center gap-3">
+            <p class="text-sm text-gray-500">
+                Candidates who successfully passed the test
+            </p>
 
-                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-green-100 text-green-600">
-                    <i class="bi bi-award text-lg"></i>
-                </div>
+        </div>
 
-                <div>
-                    <h2 class="text-2xl font-semibold text-gray-900">
-                        Passed Candidates
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Candidates who successfully passed the test
-                    </p>
-                </div>
-
-            </div>
-
-            <div class="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-semibold">
-                @Model.Count Passed
-            </div>
-
+        <div class="bg-green-50 text-green-700 px-4 py-2 rounded-lg text-sm font-semibold">
+            @totalItems Passed
         </div>
 
     </div>
@@ -49,215 +49,355 @@
 
     <!-- STATS -->
 
-    <div class="grid md:grid-cols-3 gap-6 mb-8">
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
 
-        <div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+        <!-- TOTAL PASSED -->
 
-            <div>
-                <p class="text-sm text-gray-500">Total Passed</p>
-                <p class="text-2xl font-bold text-gray-800">
-                    @Model.Count
-                </p>
+        <div class="bg-white rounded-2xl shadow-sm border p-6 hover:shadow-md transition">
+
+            <div class="flex justify-between items-start">
+
+                <div>
+
+                    <p class="text-sm text-gray-500">Total Passed</p>
+
+                    <p class="text-3xl font-bold text-gray-900 mt-1">
+                        @totalItems
+                    </p>
+
+                    <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
+                        <i class="bi bi-arrow-up"></i>
+                        Candidates passed the test
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-green-100 text-green-600">
+                    <i class="bi bi-check-circle text-xl"></i>
+                </div>
+
             </div>
 
-            <div class="w-10 h-10 bg-green-100 text-green-600 flex items-center justify-center rounded-lg">
-                <i class="bi bi-check-circle"></i>
+            <div class="mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-2 bg-green-500 rounded-full"></div>
             </div>
 
         </div>
 
 
-        <div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+        <!-- AVERAGE SCORE -->
 
-            <div>
-                <p class="text-sm text-gray-500">Average Score</p>
-                <p class="text-2xl font-bold text-gray-800">
-                    @(Model.Any() ? Model.Average(x => x.Candidate.TestResult.TotalScore) : 0)
-                </p>
+        <div class="bg-white rounded-2xl shadow-sm border p-6 hover:shadow-md transition">
+
+            <div class="flex justify-between items-start">
+
+                <div>
+
+                    <p class="text-sm text-gray-500">Average Score</p>
+
+                    <p class="text-3xl font-bold text-gray-900 mt-1">
+                        @avgScore
+                    </p>
+
+                    <p class="text-xs text-indigo-600 mt-2 flex items-center gap-1">
+                        <i class="bi bi-bar-chart"></i>
+                        Overall candidate performance
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                    <i class="bi bi-graph-up text-xl"></i>
+                </div>
+
             </div>
 
-            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 flex items-center justify-center rounded-lg">
-                <i class="bi bi-bar-chart"></i>
+            <div class="mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-2 bg-indigo-500 rounded-full transition-all duration-700"
+                     style="width:@avgPercent%">
+                </div>
             </div>
 
         </div>
 
 
-        <div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+        <!-- HIGHEST SCORE -->
 
-            <div>
-                <p class="text-sm text-gray-500">Highest Score</p>
-                <p class="text-2xl font-bold text-gray-800">
-                    @(Model.Any() ? Model.Max(x => x.Candidate.TestResult.TotalScore) : 0)
-                </p>
+        <div class="bg-white rounded-2xl shadow-sm border p-6 hover:shadow-md transition">
+
+            <div class="flex justify-between items-start">
+
+                <div>
+
+                    <p class="text-sm text-gray-500">Highest Score</p>
+
+                    <p class="text-3xl font-bold text-gray-900 mt-1">
+                        @highestScore
+                    </p>
+
+                    <p class="text-xs text-yellow-600 mt-2 flex items-center gap-1">
+                        <i class="bi bi-trophy"></i>
+                        Top candidate performance
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-yellow-100 text-yellow-600">
+                    <i class="bi bi-award text-xl"></i>
+                </div>
+
             </div>
 
-            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 flex items-center justify-center rounded-lg">
-                <i class="bi bi-trophy"></i>
+            <div class="mt-4 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-2 bg-yellow-500 rounded-full transition-all duration-700"
+                     style="width:@highestPercent%">
+                </div>
             </div>
 
         </div>
 
     </div>
-
 
 
     <!-- SEARCH -->
 
-    <div class="mb-6 relative max-w-sm">
+    <form method="get" class="mb-6 max-w-sm">
 
-        <input type="text"
-               placeholder="Search candidate..."
-               id="searchInput"
-               class="w-full border rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-indigo-500">
+        <div class="relative">
 
-        <i class="bi bi-search absolute left-3 top-2.5 text-gray-400"></i>
+            <input name="search"
+                   value="@search"
+                   placeholder="Search candidate..."
+                   class="w-full border rounded-lg pl-10 pr-10 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 
-    </div>
+            <i class="bi bi-search absolute left-3 top-2.5 text-gray-400"></i>
 
+            @if (!string.IsNullOrEmpty(search))
+            {
+                <button type="button"
+                        onclick="clearSearch()"
+                        class="absolute right-3 top-2 text-gray-400 hover:text-red-500">
+
+                    <i class="bi bi-x-lg"></i>
+
+                </button>
+            }
+
+        </div>
+
+    </form>
 
 
     <!-- TABLE -->
 
     <div class="bg-white rounded-xl shadow overflow-hidden">
 
-        <table class="w-full">
+        @if (Model == null || !Model.Any())
+        {
 
-            <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+            <div class="p-12 text-center text-gray-400">
 
-                <tr>
+                <i class="bi bi-people text-4xl mb-4"></i>
 
-                    <th class="px-6 py-4 text-left">Candidate</th>
-                    <th class="px-6 py-4 text-left">Phone</th>
-                    <th class="px-6 py-4 text-left">Score</th>
-                    <th class="px-6 py-4 text-left">Passed Date</th>
-                    <th class="px-6 py-4 text-right">Action</th>
+                <p class="text-lg font-semibold">
+                    No candidates found
+                </p>
 
-                </tr>
+                <p class="text-sm">
+                    Try adjusting your search keyword
+                </p>
 
-            </thead>
+            </div>
 
+        }
+        else
+        {
 
-            <tbody id="candidateTable" class="divide-y text-sm">
+            <table class="w-full">
 
-                @foreach (var item in Model)
-                {
+                <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
 
-                    var score = item.Candidate.TestResult?.TotalScore ?? 0;
+                    <tr>
 
-                    string scoreColor =
-                    score >= 8 ? "bg-green-100 text-green-700" :
-                    score >= 5 ? "bg-yellow-100 text-yellow-700" :
-                    "bg-red-100 text-red-700";
-
-                    <tr class="hover:bg-gray-50 transition searchable">
-
-                        <!-- Candidate -->
-
-                        <td class="px-6 py-5">
-
-                            <div class="flex items-center gap-3">
-
-                                <div class="w-10 h-10 flex items-center justify-center rounded-full
-                                                bg-gradient-to-r from-indigo-500 to-purple-500
-                                                text-white font-semibold text-sm">
-
-                                    @item.Candidate.FullName.Substring(0, 1).ToUpper()
-
-                                </div>
-
-                                <div>
-
-                                    <p class="font-semibold text-gray-900">
-                                        @item.Candidate.FullName
-                                    </p>
-
-                                    <p class="text-xs text-gray-500">
-                                        @item.Candidate.Email
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-
-                        <!-- Phone -->
-
-                        <td class="px-6 py-5 text-gray-600">
-                            @item.Candidate.Phone
-                        </td>
-
-
-                        <!-- Score -->
-
-                        <td class="px-6 py-5">
-
-                            <span class="text-xs font-semibold px-3 py-1 rounded-full @scoreColor">
-
-                                @score
-
-                            </span>
-
-                        </td>
-
-
-                        <!-- Date -->
-
-                        <td class="px-6 py-5 text-gray-500">
-                            @item.PassedDate.ToString("dd MMM yyyy")
-                        </td>
-
-
-                        <!-- Action -->
-
-                        <td class="px-6 py-5 text-right">
-
-                            <a asp-controller="Manager"
-                               asp-action="ViewProfile"
-                               asp-route-id="@item.Candidate.CandidateId"
-                               class="px-4 py-2 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-
-                                View Profile
-
-                            </a>
-
-                        </td>
+                        <th class="px-6 py-4 text-left">Candidate</th>
+                        <th class="px-6 py-4 text-left">Phone</th>
+                        <th class="px-6 py-4 text-left">Score</th>
+                        <th class="px-6 py-4 text-left">Passed Date</th>
+                        <th class="px-6 py-4 text-right">Action</th>
 
                     </tr>
 
-                }
+                </thead>
 
-            </tbody>
+                <tbody class="divide-y text-sm">
 
-        </table>
+                    @foreach (var item in Model)
+                    {
+                        var candidate = item.Candidate;
+
+                        var score = candidate?.TestResult?.TotalScore ?? 0;
+
+                        string scoreColor =
+                        score >= 8 ? "bg-green-100 text-green-700" :
+                        score >= 5 ? "bg-yellow-100 text-yellow-700" :
+                        "bg-red-100 text-red-700";
+
+                        string initial = "?";
+
+                        if (!string.IsNullOrWhiteSpace(candidate?.FullName))
+                        {
+                            initial = candidate.FullName.Substring(0, 1).ToUpper();
+                        }
+
+                        <tr class="hover:bg-gray-50 transition">
+
+                            <td class="px-6 py-5">
+
+                                <div class="flex items-center gap-3">
+
+                                    <div class="w-10 h-10 flex items-center justify-center rounded-full
+        bg-gradient-to-r from-indigo-500 to-purple-500
+        text-white font-semibold text-sm">
+
+                                        @initial
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="font-semibold text-gray-900">
+                                            @candidate?.FullName
+                                        </p>
+
+                                        <p class="text-xs text-gray-500">
+                                            @candidate?.Email
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td class="px-6 py-5 text-gray-600">
+                                @candidate?.Phone
+                            </td>
+
+                            <td class="px-6 py-5">
+
+                                <span class="text-xs font-semibold px-3 py-1 rounded-full @scoreColor">
+                                    @score
+                                </span>
+
+                            </td>
+
+                            <td class="px-6 py-5 text-gray-500">
+                                @item.PassedDate.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td class="px-6 py-5 text-right">
+
+                                <a asp-controller="Manager"
+                                   asp-action="ViewProfile"
+                                   asp-route-id="@candidate?.CandidateId"
+                                   class="px-4 py-2 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+
+                                    View Profile
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        }
 
     </div>
+
+
+    <!-- PAGINATION -->
+    @if (ViewBag.TotalPages != null && ViewBag.TotalPages > 1)
+    {
+
+        <div class="flex justify-center mt-8 gap-2 flex-wrap">
+
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <a asp-action="PassedCandidates"
+                   asp-route-page="@(ViewBag.CurrentPage - 1)"
+                   asp-route-search="@search"
+                   class="px-3 py-2 border rounded-lg hover:bg-gray-100">
+
+                    Previous
+
+                </a>
+            }
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+
+                <a asp-action="PassedCandidates"
+                   asp-route-page="@i"
+                   asp-route-search="@search"
+                   class="px-3 py-2 border rounded-lg text-sm
+        @(i == ViewBag.CurrentPage ? "bg-indigo-600 text-white border-indigo-600" : "hover:bg-gray-100")">
+
+                    @i
+
+                </a>
+
+            }
+
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <a asp-action="PassedCandidates"
+                   asp-route-page="@(ViewBag.CurrentPage + 1)"
+                   asp-route-search="@search"
+                   class="px-3 py-2 border rounded-lg hover:bg-gray-100">
+
+                    Next
+
+                </a>
+            }
+
+        </div>
+
+    }
 
 </div>
 
 
-
 <script>
 
-    const searchInput = document.getElementById("searchInput");
-    const rows = document.querySelectorAll(".searchable");
+    let timeout = null;
 
-    searchInput.addEventListener("keyup", function(){
+    const searchInput = document.querySelector('input[name="search"]');
 
-        const value = this.value.toLowerCase();
+    if (searchInput) {
 
-        rows.forEach(row => {
+    searchInput.addEventListener("keyup", function () {
 
-            const text = row.innerText.toLowerCase();
+    clearTimeout(timeout);
 
-            row.style.display = text.includes(value)
-                ? ""
-                : "none";
+    timeout = setTimeout(() => {
 
-        });
+    this.closest("form").submit();
+
+    }, 500);
 
     });
+
+    }
+
+    function clearSearch() {
+
+    window.location.href = "/Manager/PassedCandidates";
+
+    }
 
 </script>

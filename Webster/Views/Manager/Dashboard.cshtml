@@ -1,112 +1,294 @@
 ﻿@{
     ViewData["Title"] = "Manager Dashboard";
     Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+
+    int totalCandidates = ViewBag.TotalCandidates ?? 0;
+    int totalPassed = ViewBag.TotalPassed ?? 0;
+
+    double passRate = totalCandidates == 0
+        ? 0
+        : (double)totalPassed / totalCandidates * 100;
 }
 
-<div class="container mt-3">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <h2 class="mb-3">📊 Manager Dashboard</h2>
+<div class="space-y-10">
 
-    <!-- STATISTICS -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary shadow">
-                <div class="card-body text-center">
-                    <h6>Total Candidates</h6>
-                    <h2>@ViewBag.TotalCandidates</h2>
-                </div>
-            </div>
+    <!-- HEADER -->
+
+    <div class="flex justify-between items-center">
+
+        <div>
+
+            <p class="text-sm text-gray-400">
+                Dashboard / Manager
+            </p>
+
+            <h1 class="text-3xl font-bold">
+                System Overview
+            </h1>
+
         </div>
 
-        <div class="col-md-3">
-            <div class="card text-white bg-success shadow">
-                <div class="card-body text-center">
-                    <h6>Total Test Sections</h6>
-                    <h2>@ViewBag.TotalSections</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card text-white bg-warning shadow">
-                <div class="card-body text-center">
-                    <h6>Total Questions</h6>
-                    <h2>@ViewBag.TotalQuestions</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-
-        <div class="col-md-3">
-            <div class="card text-white bg-success shadow">
-                <div class="card-body text-center">
-                    <h6>Passed Candidates</h6>
-                    <h2>@ViewBag.TotalPassed</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card text-white bg-danger shadow">
-                <div class="card-body text-center">
-                    <h6>Failed Candidates</h6>
-                    <h2>@ViewBag.TotalFailed</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card text-dark bg-light shadow">
-                <div class="card-body text-center">
-                    <h6>In Progress</h6>
-                    <h2>@ViewBag.TotalInProgress</h2>
-                </div>
-            </div>
+        <div class="text-sm text-gray-500">
+            <i class="bi bi-calendar3"></i>
+            @DateTime.Now.ToString("dd MMM yyyy")
         </div>
 
     </div>
-    <!-- MANAGEMENT BUTTONS -->
-    <h4 class="mb-3">⚙️ Management</h4>
 
-    <div class="row">
-        <div class="col-md-3">
-            <a asp-controller="Candidate" asp-action="Index"
-               class="btn btn-outline-primary w-100 mb-3">
-                👤 Manage Candidates
-            </a>
+
+    <!-- ================= STAT CARDS ================= -->
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Candidates -->
+
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-sm opacity-90">Candidates</p>
+                    <h2 class="text-3xl font-bold">@ViewBag.TotalCandidates</h2>
+                </div>
+
+                <i class="bi bi-people text-3xl opacity-80"></i>
+
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            <a asp-controller="TestSection" asp-action="Index"
-               class="btn btn-outline-success w-100 mb-3">
-                📚 Manage Test Sections
-            </a>
+
+        <!-- Sections -->
+
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-sm opacity-90">Sections</p>
+                    <h2 class="text-3xl font-bold">@ViewBag.TotalSections</h2>
+                </div>
+
+                <i class="bi bi-diagram-3 text-3xl opacity-80"></i>
+
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            <a asp-controller="Question" asp-action="Index"
-               class="btn btn-outline-warning w-100 mb-3">
-                ❓ Manage Questions
-            </a>
+
+        <!-- Questions -->
+
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-sm opacity-90">Questions</p>
+                    <h2 class="text-3xl font-bold">@ViewBag.TotalQuestions</h2>
+                </div>
+
+                <i class="bi bi-journal-text text-3xl opacity-80"></i>
+
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            <a asp-controller="ManagerCandidate" asp-action="Index"
-               class="btn btn-outline-dark w-100 mb-3">
-                📋 View Candidates & Results
-            </a>
+
+        <!-- Answers -->
+
+        <div class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-sm opacity-90">Answers</p>
+                    <h2 class="text-3xl font-bold">@ViewBag.TotalAnswers</h2>
+                </div>
+
+                <i class="bi bi-list-check text-3xl opacity-80"></i>
+
+            </div>
+
         </div>
+
     </div>
 
-    <hr />
 
-    <div class="text-end">
-        <a asp-controller="Account" asp-action="Logout"
-           class="btn btn-danger">
-            🚪 Logout
-        </a>
+    <!-- ================= RESULT SUMMARY ================= -->
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- PASSED -->
+
+        <div class="bg-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-gray-500 text-sm">Passed</p>
+                    <h2 class="text-3xl font-bold text-green-600">
+                        @ViewBag.TotalPassed
+                    </h2>
+                </div>
+
+                <i class="bi bi-check-circle text-green-500 text-2xl"></i>
+
+            </div>
+
+        </div>
+
+
+        <!-- FAILED -->
+
+        <div class="bg-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-gray-500 text-sm">Failed</p>
+                    <h2 class="text-3xl font-bold text-red-600">
+                        @ViewBag.TotalFailed
+                    </h2>
+                </div>
+
+                <i class="bi bi-x-circle text-red-500 text-2xl"></i>
+
+            </div>
+
+        </div>
+
+
+        <!-- IN PROGRESS -->
+
+        <div class="bg-white p-6 rounded-xl shadow">
+
+            <div class="flex justify-between">
+
+                <div>
+                    <p class="text-gray-500 text-sm">In Progress</p>
+                    <h2 class="text-3xl font-bold text-gray-700">
+                        @ViewBag.TotalInProgress
+                    </h2>
+                </div>
+
+                <i class="bi bi-hourglass-split text-gray-500 text-2xl"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= PASS RATE ================= -->
+
+    <div class="bg-white p-6 rounded-xl shadow">
+
+        <h3 class="font-semibold mb-4">
+            Pass Rate
+        </h3>
+
+        <div class="w-full bg-gray-200 rounded-full h-4">
+
+            <div class="bg-green-500 h-4 rounded-full"
+                 style="width:@passRate%">
+            </div>
+
+        </div>
+
+        <p class="text-sm text-gray-500 mt-2">
+            @passRate.ToString("0.0")% candidates passed the test
+        </p>
+
+    </div>
+
+
+
+    <!-- ================= CHART ================= -->
+
+    <div class="bg-white p-6 rounded-xl shadow">
+
+        <h3 class="font-semibold mb-4">
+            Exam Result Distribution
+        </h3>
+
+        <canvas id="resultChart" height="90"></canvas>
+
+    </div>
+
+
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+    <div class="bg-white p-6 rounded-xl shadow">
+
+        <h3 class="font-semibold mb-4">
+            Quick Actions
+        </h3>
+
+        <div class="flex flex-wrap gap-4">
+
+            <a asp-controller="Candidate"
+               asp-action="Index"
+               class="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+
+                <i class="bi bi-people"></i>
+                Manage Candidates
+
+            </a>
+
+            <a asp-controller="Question"
+               asp-action="Index"
+               class="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+
+                <i class="bi bi-question-circle"></i>
+                Manage Questions
+
+            </a>
+
+            <a asp-controller="TestSection"
+               asp-action="Index"
+               class="px-5 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+
+                <i class="bi bi-diagram-3"></i>
+                Manage Sections
+
+            </a>
+
+        </div>
+
     </div>
 
 </div>
+
+
+@section Scripts {
+
+    <script>
+
+        new Chart(document.getElementById('resultChart'), {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: ['Passed','Failed','In Progress'],
+
+                datasets: [{
+                    data: [
+                        @ViewBag.TotalPassed,
+                        @ViewBag.TotalFailed,
+                        @ViewBag.TotalInProgress
+                    ]
+                }]
+
+            }
+
+        });
+
+    </script>
+
+}

@@ -4,136 +4,464 @@
 @{
     ViewData["Title"] = "Candidate Dashboard";
     Layout = "~/Views/Shared/_CandidateLayout.cshtml";
-}
 
-<h2 class="mb-3">Welcome, @Model.FullName</h2>
-
-<div class="card mb-4">
-    <div class="card-body">
-        <p>Status: <strong>@Model.Status</strong></p>
-
-        @if (Model.TotalScore.HasValue)
-        {
-            <p>
-                Total Score: <strong>@Model.TotalScore</strong><br />
-                Result:
-                @if (Model.IsPassed == true)
-                {
-                    <span class="text-success fw-bold">PASSED</span>
-                }
-                else
-                {
-                    <span class="text-danger fw-bold">FAILED</span>
-                }
-            </p>
-        }
-        else
-        {
-            <p class="text-muted">You have not completed all tests yet.</p>
-        }
-    </div>
-</div>
-
-<h4 class="mt-4 mb-3">Test Sections</h4>
-
-@{
-    var orderedSections = Model.TestSections
-        .OrderBy(x => x.TestSectionId)
-        .ToList();
-
+    var orderedSections = Model.TestSections.OrderBy(x => x.TestSectionId).ToList();
     int completedCount = orderedSections.Count(x => x.IsCompleted);
     int totalSections = orderedSections.Count;
-    int progressPercent = (int)((double)completedCount / totalSections * 100);
+    int progressPercent = totalSections == 0 ? 0 : (int)((double)completedCount / totalSections * 100);
 }
 
-<!-- PROGRESS BAR -->
-<div class="mb-4">
-    <label class="form-label fw-bold">Overall Progress</label>
-    <div class="progress">
-        <div class="progress-bar bg-success"
-             role="progressbar"
-             style="width: @progressPercent%">
-            @progressPercent%
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- HERO -->
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">
+                Welcome back, @Model.FullName 👋
+            </h1>
+
+            <p class="text-gray-500 mt-1">
+                Complete all sections to finish your recruitment test
+            </p>
         </div>
+
+        <div class="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg font-semibold">
+            Progress: @progressPercent%
+        </div>
+    </div>
+
+
+    <!-- STAT CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
+            <p class="text-sm text-gray-500">Current Status</p>
+
+            <h2 class="text-xl font-semibold text-indigo-600 mt-2">
+                @Model.Status
+            </h2>
+        </div>
+
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
+            <p class="text-sm text-gray-500">Completed Sections</p>
+
+            <h2 class="text-xl font-semibold text-green-600 mt-2">
+                @completedCount / @totalSections
+            </h2>
+        </div>
+
+        <div class="bg-white border rounded-xl p-6 shadow-sm">
+            <p class="text-sm text-gray-500">Total Score</p>
+
+            <h2 class="text-xl font-semibold text-blue-600 mt-2">
+                @(Model.TotalScore ?? 0)
+            </h2>
+        </div>
+
+    </div>
+
+
+    <!-- GLOBAL PROGRESS -->
+    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+
+        <div class="flex justify-between mb-3">
+            <span class="font-medium text-gray-700">
+                Test Progress
+            </span>
+
+            <span class="text-sm text-gray-500">
+                @completedCount of @totalSections completed
+            </span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3">
+
+            <div class="bg-gradient-to-r from-indigo-500 to-blue-600 h-3 rounded-full transition-all duration-700"
+                 style="width:@progressPercent%">
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- SECTIONS -->
+    <div>
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-6">
+            Test Sections
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+            @for (int i = 0; i < orderedSections.Count; i++)
+            {
+                var s = orderedSections[i];
+                bool isLocked = i > 0 && !orderedSections[i - 1].IsCompleted;
+
+                string icon = s.SectionType.ToString() switch
+                {
+                    "GeneralKnowledge" => "🌍",
+                    "Mathematics" => "📊",
+                    "ComputerTechnology" => "💻",
+                    _ => "📄"
+                };
+
+                int sectionProgress = s.IsCompleted ? 100 : s.IsStarted ? 50 : 0;
+
+                <div class="bg-white border rounded-xl p-6 shadow-sm hover:shadow-lg transition">
+
+                    <!-- HEADER -->
+                    <div class="flex items-center justify-between mb-4">
+
+                        <div class="flex items-center gap-2 font-semibold text-gray-900">
+                            <span>@icon</span>
+                            @s.SectionType
+                        </div>
+
+                        @if (s.IsCompleted)
+                        {
+                            <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                                Completed
+                            </span>
+                        }
+                        else if (s.IsStarted)
+                        {
+                            <span class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+                                In Progress
+                            </span>
+                        }
+                        else if (isLocked)
+                        {
+                            <span class="text-xs bg-gray-200 text-gray-600 px-3 py-1 rounded-full">
+                                Locked
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                                Ready
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <!-- SECTION PROGRESS -->
+                    <div class="mb-4">
+
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+
+                            <div class="bg-indigo-500 h-2 rounded-full"
+                                 style="width:@sectionProgress%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SECTION INFO -->
+                    <div class="text-sm text-gray-500 mb-4 space-y-1">
+
+                        <div>
+                            📝 Questions: @s.QuestionCount
+                        </div>
+
+                        <div>
+                            ⏱ Time Limit: @s.TimeLimit minutes
+                        </div>
+
+                    </div>
+
+
+                    <!-- SCORE + ACTION -->
+                    <div class="flex justify-between items-center">
+
+                        <div class="text-sm text-gray-500">
+                            Score:
+                            <span class="font-medium text-gray-800">
+                                @(s.IsCompleted? s.Score.ToString() : "-")
+                            </span>
+                        </div>
+
+                        @if (isLocked)
+                        {
+                            <span class="text-gray-400 text-sm">
+                                🔒 Locked
+                            </span>
+                        }
+                        else if (!s.IsStarted)
+                        {
+                            <button onclick="openInstruction(
+        '@Url.Action("Start", "CandidateTest", new { testSectionId = s.TestSectionId })',
+        '@s.SectionType',
+        @s.QuestionCount,
+        @s.TimeLimit
+        )"
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">
+
+                                Start Test
+
+                            </button>
+                        }
+                        else if (!s.IsCompleted)
+                        {
+                            <a class="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition"
+                               asp-controller="CandidateTest"
+                               asp-action="Test"
+                               asp-route-testSectionId="@s.TestSectionId">
+
+                                Continue
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-gray-400 text-sm font-medium">
+                                Completed
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- EXAM INSTRUCTION MODAL -->
+<!-- ========================= -->
+
+<div id="instructionModal"
+     class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
+
+        <!-- TITLE -->
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            📝 Exam Instructions
+        </h2>
+
+        <!-- EXAM INFO -->
+        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
+
+            <div class="grid grid-cols-2 gap-5 text-sm">
+
+                <div>
+                    <p class="text-gray-500">Section</p>
+                    <p id="modalSectionName"
+                       class="font-semibold text-gray-800 text-base"></p>
+                </div>
+
+                <div>
+                    <p class="text-gray-500">Questions</p>
+                    <p id="modalQuestions"
+                       class="font-semibold text-gray-800 text-base"></p>
+                </div>
+
+                <div>
+                    <p class="text-gray-500">Time Limit</p>
+                    <p id="modalTime"
+                       class="font-semibold text-gray-800 text-base"></p>
+                </div>
+
+                <div>
+                    <p class="text-gray-500">Attempt</p>
+                    <p class="font-semibold text-gray-800 text-base">
+                        Single Attempt Only
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RULES -->
+        <div class="mb-6">
+
+            <h3 class="font-semibold text-gray-800 mb-3">
+                ⚠ Exam Rules
+            </h3>
+
+            <ul class="text-sm text-gray-600 space-y-2 list-disc pl-5">
+
+                <li>
+                    You must complete the test within the given time.
+                </li>
+
+                <li>
+                    Once started, the timer cannot be paused.
+                </li>
+
+                <li>
+                    Leaving fullscreen mode may terminate your exam.
+                </li>
+
+                <li>
+                    Do not refresh or close the browser.
+                </li>
+
+                <li>
+                    Switching tabs may be detected as cheating.
+                </li>
+
+                <li>
+                    Each section can only be attempted once.
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- WARNING -->
+        <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 mb-6 text-sm">
+
+            ⚠ Make sure you have a stable internet connection before starting the test.
+
+        </div>
+
+
+        <!-- CONFIRM -->
+        <div class="flex items-center mb-6">
+
+            <input id="confirmCheck"
+                   type="checkbox"
+                   class="w-4 h-4 mr-2">
+
+            <label class="text-sm text-gray-700">
+                I have read and understood all instructions.
+            </label>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <div class="flex justify-end gap-3">
+
+            <button onclick="closeInstruction()"
+                    class="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300">
+                Cancel
+            </button>
+
+            <button id="startExamBtn"
+                    onclick="startExam()"
+                    class="px-6 py-2 text-sm bg-indigo-600 text-white rounded-lg opacity-50 pointer-events-none hover:bg-indigo-700">
+                Start Exam
+            </button>
+
+        </div>
+
     </div>
 </div>
 
-<table class="table table-bordered align-middle">
-    <thead class="table-dark">
-        <tr>
-            <th>Section</th>
-            <th>Status</th>
-            <th>Score</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < orderedSections.Count; i++)
-        {
-            var s = orderedSections[i];
-            bool isLocked = false;
 
-            // Nếu không phải section đầu tiên
-            if (i > 0 && !orderedSections[i - 1].IsCompleted)
-            {
-                isLocked = true;
+<script>
+
+    let startUrl = "";
+    let examStarted = false;
+
+
+    function openInstruction(url, section, questions, time) {
+
+        startUrl = url;
+
+        document.getElementById("modalSectionName").innerText = section;
+        document.getElementById("modalQuestions").innerText = questions;
+        document.getElementById("modalTime").innerText = time + " minutes";
+
+        document.getElementById("instructionModal").classList.remove("hidden");
+        document.getElementById("instructionModal").classList.add("flex");
+
+    }
+
+
+    function closeInstruction() {
+
+        document.getElementById("instructionModal").classList.add("hidden");
+
+    }
+
+
+    document.getElementById("confirmCheck")
+    .addEventListener("change", function () {
+
+        const btn = document.getElementById("startExamBtn");
+
+        if (this.checked)
+            btn.classList.remove("opacity-50", "pointer-events-none");
+        else
+            btn.classList.add("opacity-50", "pointer-events-none");
+
+    });
+
+
+    function startExam() {
+
+        examStarted = true;
+
+        enterFullscreen();
+
+        showCountdown();
+
+    }
+
+
+    function showCountdown() {
+
+        let modal = document.querySelector("#instructionModal .bg-white");
+
+        modal.innerHTML = `
+            <div class="text-center py-16">
+
+                <h2 class="text-2xl font-bold mb-4">
+                    🚀 Exam Starting
+                </h2>
+
+                <p class="text-gray-500 mb-8">
+                    Please stay focused. Good luck!
+                </p>
+
+                <div id="countdown"
+                     class="text-6xl font-bold text-indigo-600 animate-pulse">
+                     3
+                </div>
+
+            </div>
+        `;
+
+        let count = 3;
+
+        let timer = setInterval(function(){
+
+            count--;
+
+            document.getElementById("countdown").innerText = count;
+
+            if(count === 0){
+
+                clearInterval(timer);
+
+                window.location.href = startUrl;
+
             }
 
-            <tr>
-                <td class="fw-bold">@s.SectionType</td>
+        },1000);
 
-                <td>
-                    @if (s.IsCompleted)
-                    {
-                        <span class="badge bg-success">Completed</span>
-                    }
-                    else if (s.IsStarted)
-                    {
-                        <span class="badge bg-warning text-dark">In Progress</span>
-                    }
-                    else if (isLocked)
-                    {
-                        <span class="badge bg-secondary">Locked</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-info text-dark">Ready</span>
-                    }
-                </td>
+    }
 
-                <td>
-                    @(s.IsCompleted? s.Score.ToString() : "-")
-                </td>
 
-                <td>
-                    @if (isLocked)
-                    {
-                        <span class="text-muted">🔒 Locked</span>
-                    }
-                    else if (!s.IsStarted)
-                    {
-                        <a class="btn btn-sm btn-primary"
-                           asp-controller="CandidateTest"
-                           asp-action="Start"
-                           asp-route-testSectionId="@s.TestSectionId">
-                            Start
-                        </a>
-                    }
-                    else if (!s.IsCompleted)
-                    {
-                        <a class="btn btn-sm btn-warning"
-                           asp-controller="CandidateTest"
-                           asp-action="Start"
-                           asp-route-testSectionId="@s.TestSectionId">
-                            Continue
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Done</span>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    function enterFullscreen(){
+
+        if(document.documentElement.requestFullscreen)
+            document.documentElement.requestFullscreen();
+
+    }
+
+</script>

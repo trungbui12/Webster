@@ -1,80 +1,180 @@
 ﻿@{
     var fullName = User.Identity?.Name ?? "Candidate";
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
     <meta charset="utf-8" />
-    <title>Candidate Portal</title>
+    <title>@ViewData["Title"] - Webster Exam</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet" />
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         body {
-            overflow-x: hidden;
-        }
-
-        .sidebar {
-            height: 100vh;
-            background-color: #1e293b;
-            color: white;
-            padding-top: 20px;
-        }
-
-        .sidebar a {
-            color: #cbd5e1;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-
-        .sidebar a:hover {
-            background-color: #334155;
-            color: white;
-        }
-
-        .content-area {
-            padding: 20px;
+            font-family: Inter, ui-sans-serif, system-ui;
         }
     </style>
+
 </head>
-<body>
 
-    <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-dark bg-dark px-3">
-        <span class="navbar-brand">Online Test System</span>
-        <span class="text-white">
-            Welcome, <strong>@fullName</strong>
-        </span>
-    </nav>
+<body class="bg-slate-100 text-gray-800 min-h-screen">
 
-    <div class="container-fluid">
-        <div class="row">
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
 
-            <!-- SIDEBAR -->
-            <div class="col-md-2 sidebar">
-                <h5 class="text-center mb-4">Menu</h5>
+        <div class="max-w-7xl mx-auto px-6">
 
+            <div class="flex items-center justify-between h-16">
+
+                <!-- LOGO -->
                 <a asp-controller="CandidateDashboard"
-                   asp-action="Dashboard">
-                    🏠 Dashboard
+                   asp-action="Dashboard"
+                   class="flex items-center gap-3 font-semibold text-gray-900">
+
+                    <div class="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
+                        W
+                    </div>
+
+                    <span class="text-sm tracking-wide">
+                        Webster Exam System
+                    </span>
+
                 </a>
 
-                <a asp-controller="Account"
-                   asp-action="Logout">
-                    🚪 Logout
-                </a>
-            </div>
+                <!-- USER -->
+                <div class="flex items-center gap-5">
 
-            <!-- CONTENT -->
-            <div class="col-md-10 content-area">
-                @RenderBody()
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center text-sm font-semibold">
+                            @fullName.Substring(0, 1).ToUpper()
+                        </div>
+
+                        <span class="text-sm font-medium text-gray-700">
+                            @fullName
+                        </span>
+
+                    </div>
+
+                    <a asp-controller="Account"
+                       asp-action="Logout"
+                       class="text-sm text-gray-500 hover:text-red-500 transition">
+
+                        Logout
+
+                    </a>
+
+                </div>
+
             </div>
 
         </div>
+
+    </header>
+
+
+    <div class="flex">
+
+        <!-- SIDEBAR -->
+        <aside class="w-64 min-h-screen bg-white border-r border-gray-200">
+
+            <div class="p-6 border-b">
+
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    Candidate Portal
+                </p>
+
+            </div>
+
+            <nav class="p-3 space-y-2">
+
+                <!-- Dashboard -->
+                <a asp-controller="CandidateDashboard"
+                   asp-action="Dashboard"
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition
+           @(currentAction == "Dashboard"
+                               ? "bg-indigo-100 text-indigo-700"
+                               : "text-gray-600 hover:bg-gray-100")">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M3 10l9-7 9 7v11a2 2 0 01-2 2h-4a2 2 0 01-2-2V13H9v8a2 2 0 01-2 2H3z" />
+
+                    </svg>
+
+                    Dashboard
+
+                </a>
+
+
+                <!-- Logout -->
+                <a asp-controller="Account"
+                   asp-action="Logout"
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+
+                    </svg>
+
+                    Logout
+
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1">
+
+            <div class="max-w-6xl mx-auto p-8">
+
+                <!-- PAGE HEADER -->
+                <div class="mb-6">
+
+                    <h1 class="text-2xl font-semibold text-gray-800">
+                        @ViewData["Title"]
+                    </h1>
+
+                    <p class="text-sm text-gray-500">
+                        Candidate Examination Portal
+                    </p>
+
+                </div>
+
+                <!-- CONTENT CARD -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 min-h-[650px]">
+
+                    @RenderBody()
+
+                </div>
+
+            </div>
+
+        </main>
+
     </div>
 
     @RenderSection("Scripts", required: false)
