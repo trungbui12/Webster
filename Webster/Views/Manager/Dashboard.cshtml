@@ -4,6 +4,8 @@
 
     int totalCandidates = ViewBag.TotalCandidates ?? 0;
     int totalPassed = ViewBag.TotalPassed ?? 0;
+    int totalFailed = ViewBag.TotalFailed ?? 0;
+    int totalInProgress = ViewBag.TotalInProgress ?? 0;
 
     double passRate = totalCandidates == 0
         ? 0
@@ -19,18 +21,17 @@
     <div class="flex justify-between items-center">
 
         <div>
-
-            <p class="text-sm text-gray-400">
+            <p class="text-gray-400 text-sm flex items-center gap-2">
+                <i class="bi bi-speedometer2"></i>
                 Dashboard / Manager
             </p>
 
-            <h1 class="text-3xl font-bold">
+            <h1 class="text-3xl font-bold text-gray-800">
                 System Overview
             </h1>
-
         </div>
 
-        <div class="text-sm text-gray-500">
+        <div class="text-sm text-gray-500 flex items-center gap-2">
             <i class="bi bi-calendar3"></i>
             @DateTime.Now.ToString("dd MMM yyyy")
         </div>
@@ -38,23 +39,21 @@
     </div>
 
 
-    <!-- ================= STAT CARDS ================= -->
+    <!-- ================= KPI CARDS ================= -->
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
         <!-- Candidates -->
 
-        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow">
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition flex justify-between items-center">
 
-            <div class="flex justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Candidates</p>
+                <h2 class="text-3xl font-bold text-blue-600">@totalCandidates</h2>
+            </div>
 
-                <div>
-                    <p class="text-sm opacity-90">Candidates</p>
-                    <h2 class="text-3xl font-bold">@ViewBag.TotalCandidates</h2>
-                </div>
-
-                <i class="bi bi-people text-3xl opacity-80"></i>
-
+            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg">
+                <i class="bi bi-people text-xl"></i>
             </div>
 
         </div>
@@ -62,17 +61,15 @@
 
         <!-- Sections -->
 
-        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl shadow">
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition flex justify-between items-center">
 
-            <div class="flex justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Sections</p>
+                <h2 class="text-3xl font-bold text-green-600">@ViewBag.TotalSections</h2>
+            </div>
 
-                <div>
-                    <p class="text-sm opacity-90">Sections</p>
-                    <h2 class="text-3xl font-bold">@ViewBag.TotalSections</h2>
-                </div>
-
-                <i class="bi bi-diagram-3 text-3xl opacity-80"></i>
-
+            <div class="bg-green-100 text-green-600 p-3 rounded-lg">
+                <i class="bi bi-diagram-3 text-xl"></i>
             </div>
 
         </div>
@@ -80,17 +77,15 @@
 
         <!-- Questions -->
 
-        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-xl shadow">
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition flex justify-between items-center">
 
-            <div class="flex justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Questions</p>
+                <h2 class="text-3xl font-bold text-orange-600">@ViewBag.TotalQuestions</h2>
+            </div>
 
-                <div>
-                    <p class="text-sm opacity-90">Questions</p>
-                    <h2 class="text-3xl font-bold">@ViewBag.TotalQuestions</h2>
-                </div>
-
-                <i class="bi bi-journal-text text-3xl opacity-80"></i>
-
+            <div class="bg-orange-100 text-orange-600 p-3 rounded-lg">
+                <i class="bi bi-journal-text text-xl"></i>
             </div>
 
         </div>
@@ -98,83 +93,15 @@
 
         <!-- Answers -->
 
-        <div class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-6 rounded-xl shadow">
+        <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition flex justify-between items-center">
 
-            <div class="flex justify-between">
-
-                <div>
-                    <p class="text-sm opacity-90">Answers</p>
-                    <h2 class="text-3xl font-bold">@ViewBag.TotalAnswers</h2>
-                </div>
-
-                <i class="bi bi-list-check text-3xl opacity-80"></i>
-
+            <div>
+                <p class="text-gray-400 text-sm">Answers</p>
+                <h2 class="text-3xl font-bold text-cyan-600">@ViewBag.TotalAnswers</h2>
             </div>
 
-        </div>
-
-    </div>
-
-
-    <!-- ================= RESULT SUMMARY ================= -->
-
-    <div class="grid md:grid-cols-3 gap-6">
-
-        <!-- PASSED -->
-
-        <div class="bg-white p-6 rounded-xl shadow">
-
-            <div class="flex justify-between">
-
-                <div>
-                    <p class="text-gray-500 text-sm">Passed</p>
-                    <h2 class="text-3xl font-bold text-green-600">
-                        @ViewBag.TotalPassed
-                    </h2>
-                </div>
-
-                <i class="bi bi-check-circle text-green-500 text-2xl"></i>
-
-            </div>
-
-        </div>
-
-
-        <!-- FAILED -->
-
-        <div class="bg-white p-6 rounded-xl shadow">
-
-            <div class="flex justify-between">
-
-                <div>
-                    <p class="text-gray-500 text-sm">Failed</p>
-                    <h2 class="text-3xl font-bold text-red-600">
-                        @ViewBag.TotalFailed
-                    </h2>
-                </div>
-
-                <i class="bi bi-x-circle text-red-500 text-2xl"></i>
-
-            </div>
-
-        </div>
-
-
-        <!-- IN PROGRESS -->
-
-        <div class="bg-white p-6 rounded-xl shadow">
-
-            <div class="flex justify-between">
-
-                <div>
-                    <p class="text-gray-500 text-sm">In Progress</p>
-                    <h2 class="text-3xl font-bold text-gray-700">
-                        @ViewBag.TotalInProgress
-                    </h2>
-                </div>
-
-                <i class="bi bi-hourglass-split text-gray-500 text-2xl"></i>
-
+            <div class="bg-cyan-100 text-cyan-600 p-3 rounded-lg">
+                <i class="bi bi-list-check text-xl"></i>
             </div>
 
         </div>
@@ -183,78 +110,145 @@
 
 
 
-    <!-- ================= PASS RATE ================= -->
+    <!-- ================= ANALYTICS ================= -->
 
-    <div class="bg-white p-6 rounded-xl shadow">
+    <div class="grid lg:grid-cols-2 gap-6">
 
-        <h3 class="font-semibold mb-4">
-            Pass Rate
+        <!-- PASS RATE -->
+
+        <div class="bg-white p-6 rounded-2xl shadow">
+
+            <h3 class="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <i class="bi bi-bar-chart-line"></i>
+                Pass Rate
+            </h3>
+
+            <div class="w-full bg-gray-200 rounded-full h-4">
+
+                <div class="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full"
+                     style="width:@passRate%">
+                </div>
+
+            </div>
+
+            <p class="text-sm text-gray-500 mt-2">
+                @passRate.ToString("0.0")% candidates passed
+            </p>
+
+
+            <div class="grid grid-cols-3 gap-4 mt-6">
+
+                <div class="text-center bg-green-50 p-4 rounded-xl">
+                    <i class="bi bi-check-circle text-green-500"></i>
+                    <p class="text-xs text-gray-500">Passed</p>
+                    <h3 class="text-xl font-bold text-green-600">@totalPassed</h3>
+                </div>
+
+                <div class="text-center bg-red-50 p-4 rounded-xl">
+                    <i class="bi bi-x-circle text-red-500"></i>
+                    <p class="text-xs text-gray-500">Failed</p>
+                    <h3 class="text-xl font-bold text-red-600">@totalFailed</h3>
+                </div>
+
+                <div class="text-center bg-gray-100 p-4 rounded-xl">
+                    <i class="bi bi-hourglass-split text-gray-600"></i>
+                    <p class="text-xs text-gray-500">In Progress</p>
+                    <h3 class="text-xl font-bold text-gray-700">@totalInProgress</h3>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RESULT CHART -->
+
+        <div class="bg-white p-6 rounded-2xl shadow">
+
+            <h3 class="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <i class="bi bi-pie-chart"></i>
+                Exam Result Distribution
+            </h3>
+
+            <div class="flex justify-center">
+
+                <div class="w-60">
+                    <canvas id="resultChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= CREATE ACTIONS ================= -->
+
+    <div class="bg-white p-6 rounded-2xl shadow">
+
+        <h3 class="font-semibold text-gray-700 mb-6 flex items-center gap-2">
+            <i class="bi bi-lightning-charge"></i>
+            Create New
         </h3>
 
-        <div class="w-full bg-gray-200 rounded-full h-4">
+        <div class="grid md:grid-cols-3 gap-6">
 
-            <div class="bg-green-500 h-4 rounded-full"
-                 style="width:@passRate%">
-            </div>
-
-        </div>
-
-        <p class="text-sm text-gray-500 mt-2">
-            @passRate.ToString("0.0")% candidates passed the test
-        </p>
-
-    </div>
-
-
-
-    <!-- ================= CHART ================= -->
-
-    <div class="bg-white p-6 rounded-xl shadow">
-
-        <h3 class="font-semibold mb-4">
-            Exam Result Distribution
-        </h3>
-
-        <canvas id="resultChart" height="90"></canvas>
-
-    </div>
-
-
-
-    <!-- ================= QUICK ACTIONS ================= -->
-
-    <div class="bg-white p-6 rounded-xl shadow">
-
-        <h3 class="font-semibold mb-4">
-            Quick Actions
-        </h3>
-
-        <div class="flex flex-wrap gap-4">
 
             <a asp-controller="Candidate"
-               asp-action="Index"
-               class="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+               asp-action="Create"
+               class="flex items-center gap-4 p-5 border rounded-xl hover:bg-gray-50 transition">
 
-                <i class="bi bi-people"></i>
-                Manage Candidates
+                <div class="bg-blue-100 text-blue-600 p-3 rounded-lg">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+
+                <div>
+                    <p class="font-medium">Create Candidate</p>
+                    <p class="text-xs text-gray-500">
+                        Add new candidate
+                    </p>
+                </div>
 
             </a>
+
+
 
             <a asp-controller="Question"
-               asp-action="Index"
-               class="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+               asp-action="Create"
+               class="flex items-center gap-4 p-5 border rounded-xl hover:bg-gray-50 transition">
 
-                <i class="bi bi-question-circle"></i>
-                Manage Questions
+                <div class="bg-purple-100 text-purple-600 p-3 rounded-lg">
+                    <i class="bi bi-patch-question"></i>
+                </div>
+
+                <div>
+                    <p class="font-medium">Create Question</p>
+                    <p class="text-xs text-gray-500">
+                        Add new exam question
+                    </p>
+                </div>
 
             </a>
 
-            <a asp-controller="TestSection"
-               asp-action="Index"
-               class="px-5 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
 
-                <i class="bi bi-diagram-3"></i>
-                Manage Sections
+
+            <a asp-controller="TestSection"
+               asp-action="Create"
+               class="flex items-center gap-4 p-5 border rounded-xl hover:bg-gray-50 transition">
+
+                <div class="bg-green-100 text-green-600 p-3 rounded-lg">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+
+                <div>
+                    <p class="font-medium">Create Section</p>
+                    <p class="text-xs text-gray-500">
+                        Add test section
+                    </p>
+                </div>
 
             </a>
 
@@ -271,21 +265,39 @@
 
         new Chart(document.getElementById('resultChart'), {
 
-            type: 'doughnut',
+        type: 'doughnut',
 
-            data: {
+        data: {
 
-                labels: ['Passed','Failed','In Progress'],
+        labels: ['Passed','Failed','In Progress'],
 
-                datasets: [{
-                    data: [
-                        @ViewBag.TotalPassed,
-                        @ViewBag.TotalFailed,
-                        @ViewBag.TotalInProgress
-                    ]
-                }]
+        datasets: [{
 
-            }
+        data: [
+        @totalPassed,
+        @totalFailed,
+        @totalInProgress
+        ],
+
+        backgroundColor: [
+        '#22c55e',
+        '#ef4444',
+        '#64748b'
+        ]
+
+        }]
+
+        },
+
+        options: {
+
+        plugins: {
+        legend: {
+        position: 'bottom'
+        }
+        }
+
+        }
 
         });
 

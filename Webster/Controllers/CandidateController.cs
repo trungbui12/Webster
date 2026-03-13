@@ -171,16 +171,20 @@ namespace Webster.Controllers
         }
 
         // DELETE - POST
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        [HttpPost]
+        public IActionResult DeleteCandidate(int id)
         {
             var candidate = _context.Candidates.Find(id);
-            if (candidate == null) return NotFound();
+
+            if (candidate == null)
+            {
+                return Json(new { success = false });
+            }
 
             _context.Candidates.Remove(candidate);
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true });
         }
     }
 }
