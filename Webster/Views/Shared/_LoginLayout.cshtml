@@ -6,7 +6,6 @@
 
 <!DOCTYPE html>
 <html>
-
 <head>
 
     <meta name="viewport" content="width=device-width" />
@@ -18,22 +17,39 @@
 
     <style>
 
+        body {
+            background: linear-gradient(135deg,#0B2C5A,#0F3C78);
+        }
+
         .glass {
             backdrop-filter: blur(20px);
-            background: rgba(255,255,255,0.85);
-            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+
+        .industro-btn {
+            background: #FF5E14;
+        }
+
+            .industro-btn:hover {
+                background: #e55312;
+            }
+
+        .industro-focus:focus {
+            border-color: #FF5E14;
+            box-shadow: 0 0 0 2px rgba(255,94,20,.2);
         }
 
     </style>
 
 </head>
 
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 overflow-hidden">
+<body class="min-h-screen flex items-center justify-center overflow-hidden">
 
-    <!-- Background glow -->
+    <!-- background shapes -->
 
-    <div class="absolute w-[600px] h-[600px] bg-purple-400 opacity-30 blur-3xl rounded-full top-[-150px] left-[-150px]"></div>
-    <div class="absolute w-[600px] h-[600px] bg-blue-400 opacity-30 blur-3xl rounded-full bottom-[-150px] right-[-150px]"></div>
+    <div class="absolute w-[500px] h-[500px] bg-[#FF5E14] opacity-20 blur-3xl rounded-full top-[-150px] left-[-150px]"></div>
+    <div class="absolute w-[500px] h-[500px] bg-blue-300 opacity-20 blur-3xl rounded-full bottom-[-150px] right-[-150px]"></div>
 
     <div class="relative w-full max-w-xl px-6">
 
@@ -43,23 +59,26 @@
 
             <div class="text-center mb-10">
 
-                <div class="text-4xl font-bold text-gray-800 flex justify-center items-center gap-3">
+                <div class="flex justify-center mb-4">
 
-                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg">
+                    <div class="w-14 h-14 bg-[#0B2C5A] text-white rounded-xl flex items-center justify-center shadow-lg text-xl">
                         <i class="fa-solid fa-brain"></i>
                     </div>
 
-                    Webster
-
                 </div>
 
-                <p class="text-gray-500 mt-2">
+                <h2 class="text-3xl font-bold text-[#0B2C5A]">
+                    Webster
+                </h2>
+
+                <p class="text-gray-500 mt-1">
                     Aptitude Testing Platform
                 </p>
 
             </div>
 
-            <form asp-action="Login" method="post" class="space-y-6" id="loginForm">
+
+            <form asp-action="Login" method="post" id="loginForm" class="space-y-6">
 
                 <!-- USERNAME -->
 
@@ -74,7 +93,7 @@
                         <i class="fa fa-user absolute left-4 top-4 text-gray-400"></i>
 
                         <input asp-for="Username"
-                               class="w-full pl-12 pr-4 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                               class="w-full pl-12 pr-4 py-3 border rounded-xl text-lg industro-focus focus:outline-none transition"
                                placeholder="Enter username" />
 
                     </div>
@@ -100,7 +119,7 @@
                         <input asp-for="Password"
                                type="password"
                                id="passwordInput"
-                               class="w-full pl-12 pr-12 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                               class="w-full pl-12 pr-12 py-3 border rounded-xl text-lg industro-focus focus:outline-none transition"
                                placeholder="Enter password" />
 
                         <button type="button"
@@ -116,6 +135,25 @@
                 </div>
 
 
+                <!-- OPTIONS -->
+
+                <div class="flex items-center justify-between text-sm">
+
+                    <label class="flex items-center gap-2 text-gray-600">
+
+                        <input type="checkbox" class="rounded border-gray-300">
+
+                        Remember me
+
+                    </label>
+
+                    <a href="#" class="text-[#FF5E14] hover:underline">
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
                 @if (!ViewData.ModelState.IsValid)
                 {
                     <div class="bg-red-100 text-red-600 p-3 rounded-lg text-sm text-center">
@@ -126,7 +164,7 @@
                 <!-- LOGIN BUTTON -->
 
                 <button id="loginBtn"
-                        class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                        class="w-full py-3 industro-btn text-white text-lg font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
 
                     <span id="btnText">Login</span>
 
@@ -138,11 +176,14 @@
 
             </form>
 
+
             <!-- FOOTER -->
 
             <div class="text-center text-gray-500 text-sm mt-8">
 
-                <p>Webster Recruitment System</p>
+                <p class="text-[#0B2C5A] font-semibold">
+                    Webster Recruitment System
+                </p>
 
                 <p class="text-xs mt-1 opacity-70">
                     © 2026 Webster Corporation
@@ -163,23 +204,18 @@
 
         if(input.type==="password"){
         input.type="text"
-        icon.classList.remove("fa-eye")
-        icon.classList.add("fa-eye-slash")
+        icon.classList.replace("fa-eye","fa-eye-slash")
         }
         else{
         input.type="password"
-        icon.classList.remove("fa-eye-slash")
-        icon.classList.add("fa-eye")
+        icon.classList.replace("fa-eye-slash","fa-eye")
         }
 
         }
-
-        // loading animation
 
         document.getElementById("loginForm").addEventListener("submit",function(){
 
         document.getElementById("btnText").innerText="Signing in..."
-
         document.getElementById("loadingSpinner").classList.remove("hidden")
 
         })
@@ -187,5 +223,4 @@
     </script>
 
 </body>
-
 </html>

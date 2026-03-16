@@ -40,6 +40,22 @@ public class AccountController : Controller
             return RedirectToAction("Dashboard", "Manager");
         }
 
+        // ================= HR =================
+        var hr = await _context.HRs
+            .FirstOrDefaultAsync(h => h.Username == model.Username);
+
+        if (hr != null && BCrypt.Net.BCrypt.Verify(model.Password, hr.PasswordHash))
+        {
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, hr.Username),
+            new Claim(ClaimTypes.Role, "HR")
+        };
+
+            await SignInUser(claims);
+            return RedirectToAction("Dashboard", "HR");
+        }
+
         // ================= CANDIDATE =================
         var candidate = await _context.Candidates
             .FirstOrDefaultAsync(c => c.Username == model.Username);

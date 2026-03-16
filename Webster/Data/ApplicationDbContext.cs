@@ -25,6 +25,7 @@ namespace Webster.Data
         public DbSet<PassedCandidate> PassedCandidates => Set<PassedCandidate>();
         public DbSet<CandidateTestSection> CandidateTestSections => Set<CandidateTestSection>();
         public DbSet<CandidateQuestion> CandidateQuestions { get; set; }
+        public DbSet<HR> HRs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -124,7 +125,7 @@ namespace Webster.Data
 
             // Không cho 1 Candidate trả lời 1 Question nhiều lần
             modelBuilder.Entity<CandidateAnswer>()
-                .HasIndex(ca => new { ca.CandidateId, ca.QuestionId })
+                .HasIndex(x => new { x.CandidateId, x.QuestionId, x.AnswerId })
                 .IsUnique();
 
             // ===================== PassedCandidate =====================

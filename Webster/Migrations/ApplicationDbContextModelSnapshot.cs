@@ -124,8 +124,9 @@ namespace Webster.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("CandidateId", "QuestionId")
-                        .IsUnique();
+                    b.HasIndex("CandidateId", "QuestionId", "AnswerId")
+                        .IsUnique()
+                        .HasFilter("[AnswerId] IS NOT NULL");
 
                     b.ToTable("CandidateAnswers");
                 });
@@ -263,6 +264,33 @@ namespace Webster.Migrations
                         .IsUnique();
 
                     b.ToTable("Experiences");
+                });
+
+            modelBuilder.Entity("Webster.Models.Entities.HR", b =>
+                {
+                    b.Property<int>("HRId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HRId"));
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("HRId");
+
+                    b.ToTable("HRs");
                 });
 
             modelBuilder.Entity("Webster.Models.Entities.Manager", b =>
@@ -415,7 +443,7 @@ namespace Webster.Migrations
                     b.HasOne("Webster.Models.Entities.Answer", "Answer")
                         .WithMany()
                         .HasForeignKey("AnswerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Webster.Models.Entities.Candidate", "Candidate")
                         .WithMany("CandidateAnswers")
@@ -426,7 +454,7 @@ namespace Webster.Migrations
                     b.HasOne("Webster.Models.Entities.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Answer");

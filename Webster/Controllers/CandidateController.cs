@@ -19,7 +19,9 @@ namespace Webster.Controllers
             _context = context;
         }
 
+        // =========================
         // LIST
+        // =========================
         public IActionResult Index(int page = 1)
         {
             int pageSize = 5;
@@ -39,14 +41,19 @@ namespace Webster.Controllers
             return View(candidates);
         }
 
+        // =========================
         // CREATE - GET
+        // =========================
         public IActionResult Create()
         {
             return View();
         }
 
+        // =========================
         // CREATE - POST
+        // =========================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(CandidateCreateVM model)
         {
             if (!ModelState.IsValid)
@@ -58,6 +65,12 @@ namespace Webster.Controllers
                 return View(model);
             }
 
+            if (_context.Candidates.Any(c => c.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "Email already exists");
+                return View(model);
+            }
+
             var candidate = new Candidate
             {
                 FullName = model.FullName,
@@ -66,7 +79,7 @@ namespace Webster.Controllers
                 DateOfBirth = model.DateOfBirth,
                 Username = model.Username,
 
-                // ✅ BCrypt
+                // Hash password
                 PasswordHash = PasswordHasher.Hash(model.Password),
 
                 Status = CandidateStatus.Created,
@@ -77,6 +90,7 @@ namespace Webster.Controllers
                     University = model.University,
                     GraduationYear = model.GraduationYear
                 },
+
                 Experience = new Experience
                 {
                     YearsOfExperience = model.YearsOfExperience,
@@ -87,10 +101,31 @@ namespace Webster.Controllers
             _context.Candidates.Add(candidate);
             _context.SaveChanges();
 
+            // =========================
+            // SEND EMAIL ACCOUNT
+            // =========================
+            try
+            {
+                EmailHelper.SendAccountEmail(
+                    candidate.Email,
+                    model.Username,
+                    model.Password
+                );
+            }
+            catch
+            {
+                TempData["Error"] = "Candidate created but email could not be sent.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Success"] = "Candidate created and login information sent via email.";
+
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
         // EDIT - GET
+        // =========================
         public IActionResult Edit(int id)
         {
             var candidate = _context.Candidates
@@ -120,21 +155,34 @@ namespace Webster.Controllers
             return View(vm);
         }
 
+        // =========================
         // EDIT - POST
+        // =========================
         [HttpPost]
-        public IActionResult Edit(CandidateEditVM vm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CandidateEditVM vm)
         {
             if (!ModelState.IsValid)
                 return View(vm);
 
-            var candidate = _context.Candidates
+            var candidate = await _context.Candidates
                 .Include(c => c.Education)
                 .Include(c => c.Experience)
-                .FirstOrDefault(c => c.CandidateId == vm.CandidateId);
+                .FirstOrDefaultAsync(c => c.CandidateId == vm.CandidateId);
 
-            if (candidate == null) return NotFound();
+            if (candidate == null)
+                return NotFound();
 
-            // BASIC
+            var emailExists = await _context.Candidates
+                .AnyAsync(c => c.Email == vm.Email && c.CandidateId != vm.CandidateId);
+
+            if (emailExists)
+            {
+                ModelState.AddModelError("Email", "Email already exists");
+                return View(vm);
+            }
+
+            // BASIC INFO
             candidate.FullName = vm.FullName;
             candidate.Email = vm.Email;
             candidate.Phone = vm.Phone;
@@ -143,7 +191,12 @@ namespace Webster.Controllers
 
             // EDUCATION
             if (candidate.Education == null)
-                candidate.Education = new Education();
+            {
+                candidate.Education = new Education
+                {
+                    CandidateId = candidate.CandidateId
+                };
+            }
 
             candidate.Education.Degree = vm.Degree;
             candidate.Education.University = vm.University;
@@ -151,17 +204,26 @@ namespace Webster.Controllers
 
             // EXPERIENCE
             if (candidate.Experience == null)
-                candidate.Experience = new Experience();
+            {
+                candidate.Experience = new Experience
+                {
+                    CandidateId = candidate.CandidateId
+                };
+            }
 
             candidate.Experience.YearsOfExperience = vm.YearsOfExperience;
             candidate.Experience.PreviousCompany = vm.PreviousCompany;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Candidate updated successfully";
 
             return RedirectToAction(nameof(Index));
         }
 
+        // =========================
         // DELETE - GET
+        // =========================
         public IActionResult Delete(int id)
         {
             var candidate = _context.Candidates.Find(id);
@@ -170,16 +232,16 @@ namespace Webster.Controllers
             return View(candidate);
         }
 
+        // =========================
         // DELETE - POST
+        // =========================
         [HttpPost]
         public IActionResult DeleteCandidate(int id)
         {
             var candidate = _context.Candidates.Find(id);
 
             if (candidate == null)
-            {
                 return Json(new { success = false });
-            }
 
             _context.Candidates.Remove(candidate);
             _context.SaveChanges();

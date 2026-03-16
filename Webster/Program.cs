@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Webster.Data;
+using Webster.Models.Settings;
+using Webster.Services;
 using Webster.Services.Implementations;
 using Webster.Services.Interfaces;
 
@@ -15,6 +17,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings")
+);
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // ================= SERVICES =================
 builder.Services.AddControllersWithViews();

@@ -12,7 +12,7 @@ using Webster.Data;
 namespace Webster.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260307053834_FixCandidateAnswerIndex")]
+    [Migration("20260315121518_FixCandidateAnswerIndex")]
     partial class FixCandidateAnswerIndex
     {
         /// <inheritdoc />
@@ -127,11 +127,46 @@ namespace Webster.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("CandidateId", "AnswerId")
+                    b.HasIndex("CandidateId", "QuestionId", "AnswerId")
                         .IsUnique()
                         .HasFilter("[AnswerId] IS NOT NULL");
 
                     b.ToTable("CandidateAnswers");
+                });
+
+            modelBuilder.Entity("Webster.Models.Entities.CandidateQuestion", b =>
+                {
+                    b.Property<int>("CandidateQuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateQuestionId"));
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestSectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CandidateQuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("TestSectionId");
+
+                    b.HasIndex("CandidateId", "TestSectionId", "QuestionId")
+                        .IsUnique();
+
+                    b.ToTable("CandidateQuestions");
                 });
 
             modelBuilder.Entity("Webster.Models.Entities.CandidateTestSection", b =>
@@ -403,6 +438,33 @@ namespace Webster.Migrations
                     b.Navigation("Candidate");
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Webster.Models.Entities.CandidateQuestion", b =>
+                {
+                    b.HasOne("Webster.Models.Entities.Candidate", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Webster.Models.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Webster.Models.Entities.TestSection", "TestSection")
+                        .WithMany()
+                        .HasForeignKey("TestSectionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("TestSection");
                 });
 
             modelBuilder.Entity("Webster.Models.Entities.CandidateTestSection", b =>

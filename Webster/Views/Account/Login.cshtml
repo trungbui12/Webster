@@ -18,11 +18,17 @@
 
     <style>
 
-        .glass {
-            backdrop-filter: blur(22px);
-            background: rgba(255,255,255,0.88);
-            border: 1px solid rgba(255,255,255,0.4);
+        body {
+            background: linear-gradient(135deg,#0B2C5A,#0F3C78);
         }
+
+        .glass {
+            backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* floating label */
 
         .input-group {
             position: relative;
@@ -34,7 +40,7 @@
 
             .input-group label {
                 position: absolute;
-                left: 14px;
+                left: 44px;
                 top: 50%;
                 transform: translateY(-50%);
                 color: #6b7280;
@@ -49,41 +55,106 @@
             .input-group input:not(:placeholder-shown) + label {
                 top: 4px;
                 font-size: 12px;
-                color: #6366f1;
+                color: #FF5E14;
             }
 
+        /* theme */
+
+        .btn-main {
+            background: #FF5E14;
+        }
+
+            .btn-main:hover {
+                background: #e55312;
+            }
+
+        .input-focus:focus {
+            border-color: #FF5E14;
+            box-shadow: 0 0 0 2px rgba(255,94,20,.2);
+        }
+
+        /* animation */
+
+        .fade-in {
+            animation: fadeIn .6s ease;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
     </style>
 
 </head>
 
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-700 overflow-hidden">
+<body class="min-h-screen flex">
 
-    <!-- background glow -->
+    <!-- LEFT BRANDING -->
 
-    <div class="absolute w-[600px] h-[600px] bg-purple-400 opacity-30 blur-3xl rounded-full top-[-150px] left-[-150px]"></div>
-    <div class="absolute w-[600px] h-[600px] bg-blue-400 opacity-30 blur-3xl rounded-full bottom-[-150px] right-[-150px]"></div>
+    <div class="hidden lg:flex w-1/2 text-white flex-col justify-center px-16 relative">
 
-    <div class="relative w-full max-w-xl px-6">
+        <div class="absolute w-[500px] h-[500px] bg-[#FF5E14] opacity-20 blur-3xl rounded-full top-[-150px] left-[-150px]"></div>
 
-        <div class="glass shadow-2xl rounded-3xl p-12">
+        <h1 class="text-5xl font-bold leading-tight mb-6 fade-in">
+            Webster Recruitment System
+        </h1>
+
+        <p class="text-lg text-blue-100 max-w-md fade-in">
+            A modern aptitude testing platform designed to help organizations evaluate
+            candidate skills, track performance, and make smarter hiring decisions.
+        </p>
+
+        <div class="mt-10 flex gap-6 text-sm text-blue-200 fade-in">
+
+            <div class="flex items-center gap-2">
+                <i class="fa fa-check text-[#FF5E14]"></i>
+                Smart Testing
+            </div>
+
+            <div class="flex items-center gap-2">
+                <i class="fa fa-check text-[#FF5E14]"></i>
+                Instant Results
+            </div>
+
+            <div class="flex items-center gap-2">
+                <i class="fa fa-check text-[#FF5E14]"></i>
+                Analytics Dashboard
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT LOGIN -->
+
+    <div class="flex-1 flex items-center justify-center px-6">
+
+        <div class="w-full max-w-md glass shadow-2xl rounded-3xl p-10 fade-in">
 
             <!-- LOGO -->
 
             <div class="text-center mb-10">
 
-                <div class="flex justify-center mb-3">
+                <div class="flex justify-center mb-4">
 
-                    <div class="w-14 h-14 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg text-xl">
+                    <div class="w-14 h-14 bg-[#0B2C5A] text-white rounded-xl flex items-center justify-center shadow-lg text-xl">
                         <i class="fa-solid fa-brain"></i>
                     </div>
 
                 </div>
 
-                <h2 class="text-3xl font-bold text-gray-800">
+                <h2 class="text-3xl font-bold text-[#0B2C5A]">
                     Webster
                 </h2>
 
-                <p class="text-gray-500 mt-1">
+                <p class="text-gray-500 text-sm mt-1">
                     Aptitude Testing Platform
                 </p>
 
@@ -96,9 +167,11 @@
 
                 <div class="input-group">
 
+                    <i class="fa fa-user absolute left-4 top-4 text-gray-400"></i>
+
                     <input asp-for="Username"
                            placeholder=" "
-                           class="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                           class="w-full border rounded-xl pl-12 pr-4 py-3 input-focus focus:outline-none" />
 
                     <label>Username</label>
 
@@ -110,13 +183,15 @@
 
                 <!-- PASSWORD -->
 
-                <div class="relative input-group">
+                <div class="input-group">
+
+                    <i class="fa fa-lock absolute left-4 top-4 text-gray-400"></i>
 
                     <input asp-for="Password"
                            type="password"
                            id="passwordInput"
                            placeholder=" "
-                           class="w-full border rounded-xl px-4 py-3 pr-12 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                           class="w-full border rounded-xl pl-12 pr-12 py-3 input-focus focus:outline-none" />
 
                     <label>Password</label>
 
@@ -144,11 +219,8 @@
 
                     </label>
 
-                    <a href="#"
-                       class="text-indigo-600 hover:underline">
-
+                    <a href="#" class="text-[#FF5E14] hover:underline">
                         Forgot password?
-
                     </a>
 
                 </div>
@@ -161,10 +233,11 @@
                     </div>
                 }
 
+
                 <!-- LOGIN BUTTON -->
 
                 <button id="loginBtn"
-                        class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                        class="w-full py-3 btn-main text-white text-lg font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
 
                     <span id="btnText">Login</span>
 
@@ -179,7 +252,9 @@
 
             <div class="text-center text-gray-500 text-sm mt-8">
 
-                <p>Webster Recruitment System</p>
+                <p class="text-[#0B2C5A] font-semibold">
+                    Webster Recruitment System
+                </p>
 
                 <p class="text-xs opacity-70 mt-1">
                     © 2026 Webster Corporation
@@ -213,7 +288,6 @@
         document.getElementById("loginForm").addEventListener("submit",function(){
 
         document.getElementById("btnText").innerText="Signing in..."
-
         document.getElementById("loadingSpinner").classList.remove("hidden")
 
         })

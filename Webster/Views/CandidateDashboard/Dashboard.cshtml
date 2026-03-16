@@ -10,7 +10,26 @@
     int totalSections = orderedSections.Count;
     int progressPercent = totalSections == 0 ? 0 : (int)((double)completedCount / totalSections * 100);
 }
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
 
+    @@keyframes scaleIn {
+        from {
+            transform: scale(.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .animate-scaleIn {
+        animation: scaleIn .4s ease;
+    }
+
+</style>
 <div class="max-w-7xl mx-auto px-6 py-10">
 
     <!-- HERO -->
@@ -37,9 +56,18 @@
         <div class="bg-white border rounded-xl p-6 shadow-sm">
             <p class="text-sm text-gray-500">Current Status</p>
 
-            <h2 class="text-xl font-semibold text-indigo-600 mt-2">
-                @Model.Status
-            </h2>
+            @if (Model.Status == CandidateStatus.Passed)
+            {
+                <h2 class="text-xl font-semibold text-green-600 mt-2 flex items-center gap-2">
+                    PASSED 🏆
+                </h2>
+            }
+            else
+            {
+                <h2 class="text-xl font-semibold text-indigo-600 mt-2">
+                    @Model.Status
+                </h2>
+            }
         </div>
 
         <div class="bg-white border rounded-xl p-6 shadow-sm">
@@ -361,12 +389,81 @@
     </div>
 </div>
 
+@if (Model.Status == CandidateStatus.Passed)
+{
+
+    <div id="passModal"
+         class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-8 text-center animate-scaleIn">
+
+            <div class="text-6xl mb-4 animate-bounce">
+                🎉
+            </div>
+
+            <h2 class="text-2xl font-bold text-green-600 mb-3">
+                Congratulations!
+            </h2>
+
+            <p class="text-gray-600 mb-6">
+                You have successfully passed the Webster Aptitude Test.
+            </p>
+
+            <div class="bg-green-50 border border-green-100 rounded-xl p-6 mb-6">
+
+                <p class="text-sm text-gray-500">
+                    Your Final Score
+                </p>
+
+                <p class="text-3xl font-bold text-green-600 mt-1">
+                    @(Model.TotalScore ?? 0)
+                </p>
+
+            </div>
+
+            <p class="text-sm text-gray-500 mb-6">
+                Our recruitment team will contact you soon.
+            </p>
+
+            <button onclick="closePassModal()"
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+
+                Continue
+
+            </button>
+
+        </div>
+
+    </div>
+
+}
 
 <script>
 
     let startUrl = "";
     let examStarted = false;
 
+
+    // ===== CONFETTI WHEN PASS =====
+
+    document.addEventListener("DOMContentLoaded",function(){
+
+        let modal = document.getElementById("passModal");
+
+        if(modal){
+
+            confetti({
+                particleCount:150,
+                spread:70,
+                origin:{y:0.6}
+            });
+
+        }
+
+    });
+
+
+    // ===== OPEN INSTRUCTION =====
 
     function openInstruction(url, section, questions, time) {
 
@@ -382,6 +479,8 @@
     }
 
 
+    // ===== CLOSE INSTRUCTION =====
+
     function closeInstruction() {
 
         document.getElementById("instructionModal").classList.add("hidden");
@@ -389,20 +488,29 @@
     }
 
 
-    document.getElementById("confirmCheck")
-    .addEventListener("change", function () {
+    // ===== ENABLE START BUTTON =====
+
+    const confirmCheck = document.getElementById("confirmCheck");
+
+    if(confirmCheck){
+
+    confirmCheck.addEventListener("change",function(){
 
         const btn = document.getElementById("startExamBtn");
 
-        if (this.checked)
-            btn.classList.remove("opacity-50", "pointer-events-none");
+        if(this.checked)
+            btn.classList.remove("opacity-50","pointer-events-none");
         else
-            btn.classList.add("opacity-50", "pointer-events-none");
+            btn.classList.add("opacity-50","pointer-events-none");
 
     });
 
+    }
 
-    function startExam() {
+
+    // ===== START EXAM =====
+
+    function startExam(){
 
         examStarted = true;
 
@@ -413,7 +521,9 @@
     }
 
 
-    function showCountdown() {
+    // ===== COUNTDOWN =====
+
+    function showCountdown(){
 
         let modal = document.querySelector("#instructionModal .bg-white");
 
@@ -457,10 +567,24 @@
     }
 
 
+    // ===== FULLSCREEN =====
+
     function enterFullscreen(){
 
         if(document.documentElement.requestFullscreen)
             document.documentElement.requestFullscreen();
+
+    }
+
+
+    // ===== CLOSE PASS MODAL =====
+
+    function closePassModal(){
+
+        let modal = document.getElementById("passModal");
+
+        if(modal)
+            modal.style.display="none";
 
     }
 

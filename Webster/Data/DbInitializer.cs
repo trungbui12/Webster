@@ -22,6 +22,18 @@ namespace Webster.Data
 
                 context.Managers.Add(manager);
             }
+            // ================= HR =================
+            if (!context.HRs.Any())
+            {
+                var hr = new HR
+                {
+                    FullName = "HR Manager",
+                    Username = "hr",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456")
+                };
+
+                context.HRs.Add(hr);
+            }
 
             // ================= CANDIDATE =================
             if (!context.Candidates.Any())

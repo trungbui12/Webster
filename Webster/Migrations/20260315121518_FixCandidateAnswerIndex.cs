@@ -15,9 +15,9 @@ namespace Webster.Migrations
                 table: "CandidateAnswers");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CandidateAnswers_CandidateId_AnswerId",
+                name: "IX_CandidateAnswers_CandidateId_QuestionId_AnswerId",
                 table: "CandidateAnswers",
-                columns: new[] { "CandidateId", "AnswerId" },
+                columns: new[] { "CandidateId", "QuestionId", "AnswerId" },
                 unique: true,
                 filter: "[AnswerId] IS NOT NULL");
         }
@@ -26,7 +26,7 @@ namespace Webster.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_CandidateAnswers_CandidateId_AnswerId",
+                name: "IX_CandidateAnswers_CandidateId_QuestionId_AnswerId",
                 table: "CandidateAnswers");
 
             migrationBuilder.CreateIndex(

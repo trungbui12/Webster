@@ -11,7 +11,13 @@
 
     <form asp-action="Edit" method="post" class="space-y-6">
 
+        @Html.AntiForgeryToken()
+
         <input type="hidden" asp-for="CandidateId" />
+
+        <!-- VALIDATION SUMMARY -->
+        <div asp-validation-summary="ModelOnly"
+             class="text-red-500 text-sm"></div>
 
         <!-- BASIC INFO -->
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
@@ -26,35 +32,50 @@
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Full Name
                     </label>
+
                     <input asp-for="FullName"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
-                    <span asp-validation-for="FullName" class="text-red-500 text-sm"></span>
+
+                    <span asp-validation-for="FullName"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Email
                     </label>
+
                     <input asp-for="Email"
+                           type="email"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
-                    <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+
+                    <span asp-validation-for="Email"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Phone
                     </label>
+
                     <input asp-for="Phone"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="Phone"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Date Of Birth
                     </label>
+
                     <input asp-for="DateOfBirth"
                            type="date"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="DateOfBirth"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
             </div>
@@ -75,24 +96,37 @@
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Degree
                     </label>
+
                     <input asp-for="Degree"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="Degree"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         University
                     </label>
+
                     <input asp-for="University"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="University"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Graduation Year
                     </label>
+
                     <input asp-for="GraduationYear"
+                           type="number"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="GraduationYear"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
             </div>
@@ -113,16 +147,25 @@
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Years Of Experience
                     </label>
+
                     <input asp-for="YearsOfExperience"
+                           type="number"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="YearsOfExperience"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">
                         Previous Company
                     </label>
+
                     <input asp-for="PreviousCompany"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+
+                    <span asp-validation-for="PreviousCompany"
+                          class="text-red-500 text-sm"></span>
                 </div>
 
             </div>
@@ -148,3 +191,7 @@
     </form>
 
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

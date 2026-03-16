@@ -12,8 +12,8 @@ using Webster.Data;
 namespace Webster.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260310014445_AddCandidateQuestion")]
-    partial class AddCandidateQuestion
+    [Migration("20260315121939_AddHRTable")]
+    partial class AddHRTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,7 +127,7 @@ namespace Webster.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("CandidateId", "AnswerId")
+                    b.HasIndex("CandidateId", "QuestionId", "AnswerId")
                         .IsUnique()
                         .HasFilter("[AnswerId] IS NOT NULL");
 
@@ -148,6 +148,9 @@ namespace Webster.Migrations
                     b.Property<int>("CandidateId")
                         .HasColumnType("int");
 
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("int");
+
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -156,11 +159,12 @@ namespace Webster.Migrations
 
                     b.HasKey("CandidateQuestionId");
 
-                    b.HasIndex("CandidateId");
-
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("TestSectionId");
+
+                    b.HasIndex("CandidateId", "TestSectionId", "QuestionId")
+                        .IsUnique();
 
                     b.ToTable("CandidateQuestions");
                 });
@@ -263,6 +267,33 @@ namespace Webster.Migrations
                         .IsUnique();
 
                     b.ToTable("Experiences");
+                });
+
+            modelBuilder.Entity("Webster.Models.Entities.HR", b =>
+                {
+                    b.Property<int>("HRId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HRId"));
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("HRId");
+
+                    b.ToTable("HRs");
                 });
 
             modelBuilder.Entity("Webster.Models.Entities.Manager", b =>

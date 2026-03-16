@@ -43,10 +43,10 @@
 
 
     <!-- STATS -->
-    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="grid md:grid-cols-2 xl:grid-cols-5 gap-6">
 
         <!-- TOTAL -->
-        <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center hover:scale-[1.02] transition">
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
 
             <div>
                 <p class="text-sm opacity-80">Total Tests</p>
@@ -62,7 +62,7 @@
 
 
         <!-- PASS -->
-        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center">
 
             <div>
                 <p class="text-sm text-gray-500">Passed</p>
@@ -80,7 +80,7 @@
 
 
         <!-- FAIL -->
-        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center">
 
             <div>
                 <p class="text-sm text-gray-500">Failed</p>
@@ -98,7 +98,7 @@
 
 
         <!-- AVG -->
-        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center hover:shadow-lg transition">
+        <div class="bg-white p-6 rounded-xl shadow border flex justify-between items-center">
 
             <div>
                 <p class="text-sm text-gray-500">Average Score</p>
@@ -114,23 +114,52 @@
 
         </div>
 
+
+        <!-- PASS RATE -->
+        <div class="bg-white p-6 rounded-xl shadow border">
+
+            <p class="text-sm text-gray-500 mb-2">
+                Pass Rate
+            </p>
+
+            @{
+                var rate = Model.TotalTests == 0 ? 0 : (Model.Passed * 100.0 / Model.TotalTests);
+            }
+
+            <div class="flex items-center justify-between mb-2">
+
+                <span class="text-2xl font-bold text-green-600">
+                    @rate.ToString("0")%
+                </span>
+
+                <span class="text-xs text-gray-400">
+                    @Model.Passed / @Model.TotalTests
+                </span>
+
+            </div>
+
+            <div class="w-full bg-gray-200 h-3 rounded">
+
+                <div class="bg-green-500 h-3 rounded"
+                     style="width:@rate%">
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 
-    <!-- CHARTS -->
     <div class="grid lg:grid-cols-2 gap-8">
 
         <!-- PASS FAIL -->
-        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+        <div class="bg-white p-6 rounded-xl shadow">
 
             <div class="flex justify-between items-center mb-5">
-
                 <h3 class="font-semibold text-gray-700">
                     Pass vs Fail
                 </h3>
-
-                <i class="bi bi-pie-chart text-gray-400"></i>
-
             </div>
 
             <div class="h-72">
@@ -141,16 +170,12 @@
 
 
         <!-- TEST TREND -->
-        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+        <div class="bg-white p-6 rounded-xl shadow">
 
             <div class="flex justify-between items-center mb-5">
-
                 <h3 class="font-semibold text-gray-700">
                     Tests Per Day
                 </h3>
-
-                <i class="bi bi-graph-up text-gray-400"></i>
-
             </div>
 
             <div class="h-72">
@@ -188,12 +213,21 @@
 
             <tbody>
 
-                @foreach (var c in Model.TopCandidates)
+                @for (int i = 0; i < Model.TopCandidates.Count; i++)
                 {
+                    var c = Model.TopCandidates[i];
+
+                    string medal = i == 0 ? "🥇" :
+                    i == 1 ? "🥈" :
+                    i == 2 ? "🥉" : "";
 
                     <tr class="border-b hover:bg-gray-50 transition">
 
                         <td class="py-4 flex items-center gap-3">
+
+                            <span class="text-xl w-8">
+                                @medal
+                            </span>
 
                             <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center text-sm font-semibold">
                                 @c.Name.Substring(0, 1)
@@ -221,7 +255,15 @@
                         </td>
 
                     </tr>
+                }
 
+                @if (!Model.TopCandidates.Any())
+                {
+                    <tr>
+                        <td colspan="2" class="text-center text-gray-400 py-10">
+                            No candidate data yet
+                        </td>
+                    </tr>
                 }
 
             </tbody>
@@ -268,7 +310,7 @@
                     }
                 },
 
-                cutout: '65%'
+                cutout: '70%'
 
             }
 
