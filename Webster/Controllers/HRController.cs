@@ -21,7 +21,6 @@ namespace Webster.Controllers
         {
             int pageSize = 10;
 
-            // statistics
             int totalCandidates = await _context.Candidates.CountAsync();
             int passedCandidates = await _context.PassedCandidates.CountAsync();
 
@@ -29,13 +28,11 @@ namespace Webster.Controllers
             ViewBag.PassedCandidates = passedCandidates;
             ViewBag.FailedCandidates = totalCandidates - passedCandidates;
 
-            // query passed candidates
             var query = _context.PassedCandidates
                 .Include(x => x.Candidate)
                 .ThenInclude(c => c.TestResult)
                 .AsQueryable();
 
-            // search
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(x =>
@@ -73,6 +70,28 @@ namespace Webster.Controllers
                 return NotFound();
 
             return View(candidate);
+        }
+
+        // ================= SEND INTERVIEW EMAIL =================
+        [HttpPost]
+        public async Task<IActionResult> SendInterview(int candidateId, string interviewDate, string location)
+        {
+            var candidate = await _context.Candidates
+                .FirstOrDefaultAsync(x => x.CandidateId == candidateId);
+
+            if (candidate == null)
+                return NotFound();
+
+            Webster.Helpers.EmailHelper.SendInterviewEmail(
+                candidate.Email,
+                candidate.FullName,
+                interviewDate,
+                location
+            );
+
+            TempData["InterviewSuccess"] = "Interview email sent successfully!";
+
+            return RedirectToAction("Dashboard");
         }
     }
 }

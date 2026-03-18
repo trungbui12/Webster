@@ -87,5 +87,62 @@ namespace Webster.Helpers
 
             smtp.Send(mail);
         }
+
+        public static void SendInterviewEmail(string toEmail, string candidateName, string interviewDate, string location)
+        {
+            var fromEmail = "yuuichirou67@gmail.com";
+            var fromPassword = "xniounmzznidjsny";
+
+            var smtp = new SmtpClient("smtp.gmail.com", 587)
+            {
+                Credentials = new NetworkCredential(fromEmail, fromPassword),
+                EnableSsl = true
+            };
+
+            var mail = new MailMessage
+            {
+                From = new MailAddress(fromEmail, "Webster Recruitment System"),
+                Subject = "Interview Invitation",
+                IsBodyHtml = true,
+
+                Body = $@"
+<div style='font-family:Arial;background:#f4f6f9;padding:40px'>
+
+<div style='max-width:600px;margin:auto;background:white;border-radius:10px;overflow:hidden'>
+
+<div style='background:#2563eb;color:white;padding:25px;text-align:center'>
+<h2>Webster Recruitment</h2>
+<p>Interview Invitation</p>
+</div>
+
+<div style='padding:30px'>
+
+<p>Dear <b>{candidateName}</b>,</p>
+
+<p>Congratulations! You have successfully passed the aptitude test.</p>
+
+<p>We would like to invite you to an interview with the following details:</p>
+
+<div style='background:#f1f5f9;padding:20px;border-radius:8px'>
+<p><b>Date:</b> {interviewDate}</p>
+<p><b>Location:</b> {location}</p>
+</div>
+
+<p>Please arrive 10 minutes before the interview time.</p>
+
+<p>Best regards,<br/>HR Department</p>
+
+</div>
+
+</div>
+
+</div>"
+            };
+
+            mail.To.Add(toEmail);
+
+            smtp.Send(mail);
+        }
+
     }
 }

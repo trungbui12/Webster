@@ -211,4 +211,44 @@
         }
     </div>
 
+    <!-- INTERVIEW INVITATION -->
+    <div class="card-box">
+
+        <div class="section-title">Interview Invitation</div>
+
+        <form asp-controller="HR" asp-action="SendInterview" method="post">
+
+            <input type="hidden" name="candidateId" value="@Model.CandidateId" />
+
+            <div class="grid">
+
+                <div>
+                    <div class="label">Interview Date</div>
+                    <input type="datetime-local"
+                           name="interviewDate"
+                           required
+                           style="padding:8px;border:1px solid #ddd;border-radius:6px;width:100%" />
+                </div>
+
+                <div>
+                    <div class="label">Location</div>
+                    <input type="text"
+                           name="location"
+                           placeholder="Company Office"
+                           required
+                           style="padding:8px;border:1px solid #ddd;border-radius:6px;width:100%" />
+                </div>
+
+            </div>
+
+            <br />
+
+            <button type="submit"
+                    style="background:#2563eb;color:white;padding:10px 20px;border:none;border-radius:6px">
+                Send Interview Email
+            </button>
+
+        </form>
+
+    </div>
 </div>

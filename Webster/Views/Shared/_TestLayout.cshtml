@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>Online Test</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        body {
+            background: #f1f5f9;
+            font-family: system-ui;
+        }
+
+        /* Disable select except inputs */
+
+        * {
+            user-select: none;
+        }
+
+        input, textarea, button {
+            user-select: text;
+        }
+
+        /* Smooth scroll */
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Test mode banner */
+
+        .test-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            z-index: 9999;
+        }
+
+        /* Main container spacing */
+
+        main {
+            padding-top: 50px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- TEST MODE BANNER -->
+
+    <div class="test-banner">
+        🔒 Test Mode Active — Do not refresh, switch tabs, or exit fullscreen
+    </div>
+
+    <!-- MAIN CONTENT -->
+
+    <main class="min-h-screen">
+
+        @RenderBody()
+
+    </main>
+
+    <!-- LOADING OVERLAY -->
+
+    <div id="loadingOverlay"
+         class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+
+        <div class="bg-white px-8 py-6 rounded-xl shadow-lg flex items-center gap-4">
+
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+
+            <span class="font-medium">Submitting test...</span>
+
+        </div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+
+    <script>
+
+        //////////////////////////////
+        // BLOCK PRINT
+        //////////////////////////////
+
+        document.addEventListener("keydown",function(e){
+
+            if(e.ctrlKey && e.key==="p"){
+                e.preventDefault()
+            }
+
+        })
+
+        //////////////////////////////
+        // BLOCK BACK BUTTON
+        //////////////////////////////
+
+        history.pushState(null,null,location.href)
+
+        window.onpopstate=function(){
+            history.go(1)
+        }
+
+        //////////////////////////////
+        // BLOCK ZOOM
+        //////////////////////////////
+
+        document.addEventListener("wheel",function(e){
+
+            if(e.ctrlKey){
+                e.preventDefault()
+            }
+
+        },{passive:false})
+
+        //////////////////////////////
+        // BLOCK RIGHT CLICK
+        //////////////////////////////
+
+        document.addEventListener("contextmenu",function(e){
+            e.preventDefault()
+        })
+
+        //////////////////////////////
+        // BLOCK COPY
+        //////////////////////////////
+
+        document.addEventListener("copy",function(e){
+            e.preventDefault()
+        })
+
+        //////////////////////////////
+        // BLOCK PASTE
+        //////////////////////////////
+
+        document.addEventListener("paste",function(e){
+            e.preventDefault()
+        })
+
+        //////////////////////////////
+        // DEVTOOLS DETECTION
+        //////////////////////////////
+
+        let devtools=false
+
+        setInterval(function(){
+
+            let threshold=160
+
+            if(
+                window.outerWidth - window.innerWidth > threshold ||
+                window.outerHeight - window.innerHeight > threshold
+            ){
+
+                if(!devtools){
+
+                    devtools=true
+
+                    alert("Developer tools detected")
+
+                }
+
+            }
+
+        },1000)
+
+        //////////////////////////////
+        // PREVENT REFRESH
+        //////////////////////////////
+
+        document.addEventListener("keydown",function(e){
+
+            if(e.key==="F5" || (e.ctrlKey && e.key==="r")){
+                e.preventDefault()
+            }
+
+        })
+
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>

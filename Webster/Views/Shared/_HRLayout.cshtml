@@ -1,46 +1,156 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+
     <meta name="viewport" content="width=device-width" />
     <title>@ViewData["Title"] - HR Panel</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 font-sans">
 
-    <div class="flex">
+    <div class="flex min-h-screen">
 
-        <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white min-h-screen">
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-gray-900 text-gray-200 flex flex-col">
 
-            <div class="p-6 text-2xl font-bold border-b border-gray-700">
-                HR Panel
+            <!-- LOGO -->
+            <div class="p-6 border-b border-gray-700">
+
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+
+                    <i class="bi bi-person-workspace text-blue-400"></i>
+                    HR Panel
+
+                </h1>
+
+                <p class="text-gray-400 text-sm">
+                    Recruitment System
+                </p>
+
             </div>
 
-            <nav class="p-4 space-y-2">
+
+            <!-- MENU -->
+            <nav class="flex-1 p-4 space-y-2 text-sm">
 
                 <a asp-controller="HR" asp-action="Dashboard"
-                   class="block px-4 py-2 rounded hover:bg-gray-700">
-                    Dashboard
-                </a>
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
 
-                <a asp-controller="Account" asp-action="Logout"
-                   class="block px-4 py-2 rounded hover:bg-red-600">
-                    Logout
+                    <i class="bi bi-speedometer2 text-lg"></i>
+                    Dashboard
+
                 </a>
 
             </nav>
 
+
+            <!-- USER -->
+            <div class="p-4 border-t border-gray-700">
+
+                <div class="flex items-center gap-3 mb-3">
+
+                    <div class="w-10 h-10 bg-blue-500 flex items-center justify-center rounded-full text-white">
+
+                        <i class="bi bi-person-fill"></i>
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-sm font-semibold">
+                            HR User
+                        </p>
+
+                        <p class="text-xs text-gray-400">
+                            Human Resource
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <a asp-controller="Account" asp-action="Logout"
+                   class="flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 py-2 rounded-lg transition">
+
+                    <i class="bi bi-box-arrow-right"></i>
+                    Logout
+
+                </a>
+
+            </div>
+
         </aside>
 
 
-        <!-- Content -->
-        <main class="flex-1 p-8">
 
-            @RenderBody()
+        <!-- MAIN AREA -->
+        <div class="flex-1 flex flex-col">
 
-        </main>
+            <!-- TOPBAR -->
+            <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+
+                <div class="flex items-center gap-4">
+
+                    <h2 class="text-xl font-semibold text-gray-700">
+                        @ViewData["Title"]
+                    </h2>
+
+                </div>
+
+
+                <div class="flex items-center gap-6">
+
+                    <!-- SEARCH -->
+                    <div class="relative">
+
+                        <input type="text"
+                               placeholder="Search..."
+                               class="border rounded-lg px-4 py-1.5 pl-9 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+
+                        <i class="bi bi-search absolute left-2 top-1.5 text-gray-400"></i>
+
+                    </div>
+
+
+                    <!-- NOTIFICATION -->
+                    <div class="text-xl text-gray-600 cursor-pointer">
+
+                        <i class="bi bi-bell"></i>
+
+                    </div>
+
+
+                    <!-- USER -->
+                    <div class="flex items-center gap-2 text-gray-700">
+
+                        <i class="bi bi-person-circle text-xl"></i>
+
+                        <span class="text-sm font-medium">
+                            HR
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+
+            <!-- PAGE CONTENT -->
+            <main class="flex-1 p-8">
+
+                @RenderBody()
+
+            </main>
+
+        </div>
 
     </div>
 

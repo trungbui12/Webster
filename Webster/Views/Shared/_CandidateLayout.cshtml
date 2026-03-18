@@ -11,51 +11,73 @@
     <title>@ViewData["Title"] - Webster Exam</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+
         body {
-            font-family: Inter, ui-sans-serif, system-ui;
+            font-family: Inter, system-ui;
         }
+
+        /* WEBSTER COLORS */
+
+        .webster-bg {
+            background: linear-gradient(135deg,#163e73,#0f2f57);
+        }
+
+        .webster-sidebar {
+            background: #0f2f57;
+        }
+
+        .webster-orange {
+            background: #ff5a14;
+        }
+
+            .webster-orange:hover {
+                background: #e14c0f;
+            }
+
     </style>
 
 </head>
 
-<body class="bg-slate-100 text-gray-800 min-h-screen">
+<body class="bg-slate-100 text-gray-800">
 
     <!-- NAVBAR -->
-    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header class="sticky top-0 z-50 webster-bg shadow-lg">
 
         <div class="max-w-7xl mx-auto px-6">
 
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between h-16 text-white">
 
                 <!-- LOGO -->
+
                 <a asp-controller="CandidateDashboard"
                    asp-action="Dashboard"
-                   class="flex items-center gap-3 font-semibold text-gray-900">
+                   class="flex items-center gap-3 font-semibold">
 
-                    <div class="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
+                    <div class="w-9 h-9 rounded-lg bg-white text-[#163e73] flex items-center justify-center font-bold">
                         W
                     </div>
 
-                    <span class="text-sm tracking-wide">
+                    <span class="tracking-wide text-sm">
                         Webster Exam System
                     </span>
 
                 </a>
 
+
                 <!-- USER -->
-                <div class="flex items-center gap-5">
+
+                <div class="flex items-center gap-4">
 
                     <div class="flex items-center gap-3">
 
-                        <div class="w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center text-sm font-semibold">
+                        <div class="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center text-sm font-semibold">
                             @fullName.Substring(0, 1).ToUpper()
                         </div>
 
-                        <span class="text-sm font-medium text-gray-700">
+                        <span class="text-sm font-medium">
                             @fullName
                         </span>
 
@@ -63,7 +85,7 @@
 
                     <a asp-controller="Account"
                        asp-action="Logout"
-                       class="text-sm text-gray-500 hover:text-red-500 transition">
+                       class="text-sm opacity-90 hover:text-orange-300">
 
                         Logout
 
@@ -78,28 +100,33 @@
     </header>
 
 
+
     <div class="flex">
 
         <!-- SIDEBAR -->
-        <aside class="w-64 min-h-screen bg-white border-r border-gray-200">
 
-            <div class="p-6 border-b">
+        <aside class="w-64 min-h-screen webster-sidebar text-white">
 
-                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+            <div class="p-6 border-b border-blue-900">
+
+                <p class="text-xs uppercase tracking-wider text-blue-300">
                     Candidate Portal
                 </p>
 
             </div>
 
+
             <nav class="p-3 space-y-2">
 
                 <!-- Dashboard -->
+
                 <a asp-controller="CandidateDashboard"
                    asp-action="Dashboard"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition
-           @(currentAction == "Dashboard"
-                               ? "bg-indigo-100 text-indigo-700"
-                               : "text-gray-600 hover:bg-gray-100")">
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition
+
+@(currentAction == "Dashboard"
+                   ? "bg-blue-700 text-white"
+                   : "text-blue-200 hover:bg-blue-800")">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="w-5 h-5"
@@ -120,9 +147,10 @@
 
 
                 <!-- Logout -->
+
                 <a asp-controller="Account"
                    asp-action="Logout"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition">
+                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-blue-200 hover:bg-blue-800">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="w-5 h-5"
@@ -146,26 +174,30 @@
         </aside>
 
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN -->
+
         <main class="flex-1">
 
             <div class="max-w-6xl mx-auto p-8">
 
                 <!-- PAGE HEADER -->
-                <div class="mb-6">
 
-                    <h1 class="text-2xl font-semibold text-gray-800">
+                <div class="mb-8">
+
+                    <h1 class="text-3xl font-semibold text-[#163e73]">
                         @ViewData["Title"]
                     </h1>
 
                     <p class="text-sm text-gray-500">
-                        Candidate Examination Portal
+                        Webster Recruitment Examination Portal
                     </p>
 
                 </div>
 
+
                 <!-- CONTENT CARD -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8 min-h-[650px]">
+
+                <div class="bg-white rounded-2xl shadow-lg p-10 border border-gray-100 min-h-[650px]">
 
                     @RenderBody()
 
@@ -176,6 +208,7 @@
         </main>
 
     </div>
+
 
     @RenderSection("Scripts", required: false)
 

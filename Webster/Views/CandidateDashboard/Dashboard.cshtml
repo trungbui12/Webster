@@ -29,86 +29,123 @@
         animation: scaleIn .4s ease;
     }
 
+    .webster-hero {
+        background: linear-gradient(135deg,#163e73,#0f2f57);
+    }
+
+    .webster-progress {
+        background: linear-gradient(90deg,#2563eb,#0ea5e9);
+    }
 </style>
 <div class="max-w-7xl mx-auto px-6 py-10">
 
-    <!-- HERO -->
-    <div class="flex items-center justify-between mb-10">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">
-                Welcome back, @Model.FullName 👋
-            </h1>
+    <div class="webster-hero rounded-2xl p-8 text-white mb-10 shadow-lg">
 
-            <p class="text-gray-500 mt-1">
-                Complete all sections to finish your recruitment test
-            </p>
+        <div class="flex items-center justify-between">
+
+            <div>
+
+                <h1 class="text-3xl font-bold">
+                    Welcome, @Model.FullName 
+                </h1>
+
+                <p class="text-blue-100 mt-2">
+                    Complete all sections to finish your Webster aptitude test
+                </p>
+
+            </div>
+
+            <div class="bg-white/20 backdrop-blur rounded-xl px-6 py-4 text-center">
+
+                <p class="text-sm text-blue-100">
+                    Progress
+                </p>
+
+                <p class="text-2xl font-bold">
+                    @progressPercent%
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="text-sm bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg font-semibold">
-            Progress: @progressPercent%
-        </div>
     </div>
 
 
     <!-- STAT CARDS -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 
-        <div class="bg-white border rounded-xl p-6 shadow-sm">
-            <p class="text-sm text-gray-500">Current Status</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+
+            <p class="text-gray-500 text-sm">
+                Current Status
+            </p>
 
             @if (Model.Status == CandidateStatus.Passed)
             {
-                <h2 class="text-xl font-semibold text-green-600 mt-2 flex items-center gap-2">
+                <h2 class="text-xl font-bold text-green-600 mt-2 flex items-center gap-2">
                     PASSED 🏆
                 </h2>
             }
             else
             {
-                <h2 class="text-xl font-semibold text-indigo-600 mt-2">
+                <h2 class="text-xl font-bold text-blue-600 mt-2">
                     @Model.Status
                 </h2>
             }
+
         </div>
 
-        <div class="bg-white border rounded-xl p-6 shadow-sm">
-            <p class="text-sm text-gray-500">Completed Sections</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
 
-            <h2 class="text-xl font-semibold text-green-600 mt-2">
+            <p class="text-gray-500 text-sm">
+                Completed Sections
+            </p>
+
+            <h2 class="text-xl font-bold text-green-600 mt-2">
                 @completedCount / @totalSections
             </h2>
+
         </div>
 
-        <div class="bg-white border rounded-xl p-6 shadow-sm">
-            <p class="text-sm text-gray-500">Total Score</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
 
-            <h2 class="text-xl font-semibold text-blue-600 mt-2">
+            <p class="text-gray-500 text-sm">
+                Total Score
+            </p>
+
+            <h2 class="text-xl font-bold text-orange-500 mt-2">
                 @(Model.TotalScore ?? 0)
             </h2>
+
         </div>
 
     </div>
 
 
     <!-- GLOBAL PROGRESS -->
-    <div class="bg-white border rounded-xl shadow-sm p-6 mb-10">
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-10">
 
         <div class="flex justify-between mb-3">
-            <span class="font-medium text-gray-700">
-                Test Progress
+
+            <span class="font-semibold text-gray-700">
+                Overall Progress
             </span>
 
             <span class="text-sm text-gray-500">
-                @completedCount of @totalSections completed
+                @completedCount / @totalSections sections
             </span>
+
         </div>
 
-        <div class="w-full bg-gray-200 rounded-full h-3">
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
 
-            <div class="bg-gradient-to-r from-indigo-500 to-blue-600 h-3 rounded-full transition-all duration-700"
+            <div class="webster-progress h-4 rounded-full transition-all duration-700"
                  style="width:@progressPercent%">
             </div>
 
         </div>
+
     </div>
 
 
@@ -136,14 +173,32 @@
 
                 int sectionProgress = s.IsCompleted ? 100 : s.IsStarted ? 50 : 0;
 
-                <div class="bg-white border rounded-xl p-6 shadow-sm hover:shadow-lg transition">
+                <div class="group bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-xl transition duration-300 relative overflow-hidden">
+
+                    <!-- HOVER ACCENT BAR -->
+                    <div class="absolute left-0 top-0 h-full w-1 bg-blue-600 opacity-0 group-hover:opacity-100 transition"></div>
 
                     <!-- HEADER -->
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-5">
 
-                        <div class="flex items-center gap-2 font-semibold text-gray-900">
-                            <span>@icon</span>
-                            @s.SectionType
+                        <div class="flex items-center gap-3">
+
+                            <div class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+                                @icon
+                            </div>
+
+                            <div>
+
+                                <p class="font-semibold text-gray-900">
+                                    @s.SectionType
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    Section @(i + 1)
+                                </p>
+
+                            </div>
+
                         </div>
 
                         @if (s.IsCompleted)
@@ -174,12 +229,12 @@
                     </div>
 
 
-                    <!-- SECTION PROGRESS -->
-                    <div class="mb-4">
+                    <!-- PROGRESS BAR -->
+                    <div class="mb-5">
 
-                        <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
 
-                            <div class="bg-indigo-500 h-2 rounded-full"
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-500"
                                  style="width:@sectionProgress%">
                             </div>
 
@@ -188,29 +243,30 @@
                     </div>
 
 
-                    <!-- SECTION INFO -->
-                    <div class="text-sm text-gray-500 mb-4 space-y-1">
+                    <!-- INFO -->
+                    <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
 
-                        <div>
-                            📝 Questions: @s.QuestionCount
+                        <div class="flex items-center gap-2">
+                            📄 <span>@s.QuestionCount Questions</span>
                         </div>
 
-                        <div>
-                            ⏱ Time Limit: @s.TimeLimit minutes
+                        <div class="flex items-center gap-2">
+                            ⏱ <span>@s.TimeLimit min</span>
                         </div>
 
                     </div>
 
 
-                    <!-- SCORE + ACTION -->
-                    <div class="flex justify-between items-center">
+                    <!-- FOOTER -->
+                    <div class="flex items-center justify-between">
 
                         <div class="text-sm text-gray-500">
                             Score:
-                            <span class="font-medium text-gray-800">
+                            <span class="font-semibold text-gray-900">
                                 @(s.IsCompleted? s.Score.ToString() : "-")
                             </span>
                         </div>
+
 
                         @if (isLocked)
                         {
@@ -221,12 +277,12 @@
                         else if (!s.IsStarted)
                         {
                             <button onclick="openInstruction(
-        '@Url.Action("Start", "CandidateTest", new { testSectionId = s.TestSectionId })',
-        '@s.SectionType',
-        @s.QuestionCount,
-        @s.TimeLimit
-        )"
-                                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition">
+                        '@Url.Action("Start", "CandidateTest", new { testSectionId = s.TestSectionId })',
+                        '@s.SectionType',
+                        @s.QuestionCount,
+                        @s.TimeLimit
+                    )"
+                                    class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold hover:bg-orange-600 transition">
 
                                 Start Test
 
@@ -234,18 +290,19 @@
                         }
                         else if (!s.IsCompleted)
                         {
-                            <a class="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition"
-                               asp-controller="CandidateTest"
+                            <a asp-controller="CandidateTest"
                                asp-action="Test"
-                               asp-route-testSectionId="@s.TestSectionId">
+                               asp-route-testSectionId="@s.TestSectionId"
+                               class="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold hover:bg-yellow-600 transition">
 
                                 Continue
+
                             </a>
                         }
                         else
                         {
-                            <span class="text-gray-400 text-sm font-medium">
-                                Completed
+                            <span class="text-green-600 text-sm font-semibold">
+                                ✔ Finished
                             </span>
                         }
 
